@@ -50,7 +50,7 @@
     "clean": "bun scripts/clean",
     "clean:root": "git clean -xdf dist node_modules .cache .turbo",
     "clean:ws": "turbo run clean",
-    "ci": "turbo run typecheck test format lint && bun run lint:ws"
+    "ck": "turbo run typecheck test format lint && bun run lint:ws"
   },
   "devDependencies": {
     "turbo": "^2.6.1"
