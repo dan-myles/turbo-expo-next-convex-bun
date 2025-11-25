@@ -1,39 +1,20 @@
 #!/usr/bin/env bun
+import { intro, outro, spinner, log } from "@clack/prompts"
 import { $ } from "bun"
+import { existsSync } from "node:fs"
+import { join } from "node:path"
 
-class Spinner {
-  private frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-  private interval: Timer | null = null
-  private frameIndex = 0
+interface CleanResult {
+  name: string
+  success: boolean
+  deleted: string[]
+  error?: unknown
+}
 
-  start(message: string) {
-    process.stdout.write(`${this.frames[0]} ${message}`)
-    this.interval = setInterval(() => {
-      process.stdout.write(`\r${this.frames[this.frameIndex]} ${message}`)
-      this.frameIndex = (this.frameIndex + 1) % this.frames.length
-    }, 80)
-  }
-
-  succeed(message: string) {
-    this.stop()
-    console.log(`\r✅ ${message}`)
-  }
-
-  fail(message: string) {
-    this.stop()
-    console.log(`\r❌ ${message}`)
-  }
-
-  warn(message: string) {
-    this.stop()
-    console.log(`\r⚠️  ${message}`)
-  }
-
-  private stop() {
-    if (this.interval) {
-      clearInterval(this.interval)
-      this.interval = null
-    }
+interface PackageJson {
+  name?: string
+  scripts?: {
+    clean?: string
   }
 }
 
@@ -46,118 +27,194 @@ async function checkTurboInstalled(): Promise<boolean> {
   }
 }
 
-async function runCleanTask(name: string, command: string[]) {
+async function getWorkspaces(): Promise<string[]> {
+  const rootPackage = await Bun.file("package.json").json() as PackageJson & {
+    workspaces?: { packages?: string[] }
+  }
+  const workspacePatterns = rootPackage.workspaces?.packages ?? []
+
+  const workspaces: string[] = []
+  for (const pattern of workspacePatterns) {
+    const globPattern = pattern.replace(/\/\*$/, "")
+    const result = await $`find ${globPattern} -maxdepth 1 -type d`.quiet()
+    const dirs = result.stdout.toString().trim().split("\n").filter(Boolean)
+
+    for (const dir of dirs) {
+      if (existsSync(join(dir, "package.json"))) {
+        workspaces.push(dir)
+      }
+    }
+  }
+
+  return workspaces
+}
+
+async function parseCleanTargets(
+  workspacePath: string,
+): Promise<string[]> {
+  const packageJsonPath = join(workspacePath, "package.json")
+
+  if (!existsSync(packageJsonPath)) {
+    return []
+  }
+
+  const packageJson = await Bun.file(packageJsonPath).json() as PackageJson
+  const cleanScript = packageJson.scripts?.clean
+
+  if (!cleanScript) {
+    return []
+  }
+
+  const match = cleanScript.match(/git clean -xdf (.+)/)
+  if (!match) {
+    return []
+  }
+
+  return match[1].split(/\s+/).filter(Boolean)
+}
+
+async function checkExistingPaths(
+  workspacePath: string,
+  targets: string[],
+): Promise<string[]> {
+  const existing: string[] = []
+
+  for (const target of targets) {
+    const fullPath = join(workspacePath, target)
+    if (existsSync(fullPath)) {
+      existing.push(target)
+    }
+  }
+
+  return existing
+}
+
+async function runCleanTask(
+  name: string,
+  command: string[],
+  workspacePath?: string,
+): Promise<CleanResult> {
+  let deleted: string[] = []
+
+  if (workspacePath) {
+    const targets = await parseCleanTargets(workspacePath)
+    deleted = await checkExistingPaths(workspacePath, targets)
+  }
+
   try {
     await $`${command}`.quiet()
-    return { success: true, name }
+    return { success: true, name, deleted }
   } catch (error) {
-    return { success: false, name, error }
+    return { success: false, name, deleted: [], error }
   }
 }
 
-function showWarning() {
-  const warningBox = `
-╔═══════════════════════════════════════════════════════════════╗
-║                          ⚠️  WARNING  ⚠️                      ║
-╠═══════════════════════════════════════════════════════════════╣
-║                                                               ║
-║  🗑️  CACHE AND NODE_MODULES HAVE BEEN CLEARED!                ║
-║                                                               ║
-║  📦 You MUST run the following command before continuing:     ║
-║                                                               ║
-║      bun install                                              ║
-║                                                               ║
-║  This will restore your dependencies and rebuild the cache.   ║
-║                                                               ║
-╚═══════════════════════════════════════════════════════════════╝
-`
 
-  console.log(warningBox)
+
+function formatCleanResults(results: CleanResult[], hasTurbo: boolean): void {
+  const hasFailures = results.some((r) => !r.success)
+
+  if (hasFailures) {
+    log.error("Some clean tasks failed!")
+    return
+  }
+
+  const maxNameLength = Math.max(...results.map((r) => r.name.length))
+  const padding = 2
+
+  const rows = results.map((result) => {
+    const name = result.name.padEnd(maxNameLength + padding)
+    const status = result.success ? "✓" : "✗"
+    const deleted =
+      result.deleted.length > 0
+        ? result.deleted.join(", ")
+        : "nothing to delete"
+
+    return `${status}  ${name}  ${deleted}`
+  })
+
+  log.message("")
+  rows.forEach((row) => log.message(row))
+  log.message("")
+
+  if (!hasTurbo) {
+    log.info("Note: Turbo was not installed, so workspace cleaning was skipped.")
+  }
 }
 
-async function main() {
-  console.log("🧹 Starting comprehensive clean operation...\n")
+async function main(): Promise<void> {
+  intro("🧹 Repository Clean")
 
-  // Check if Turbo is installed
-  const spinner = new Spinner()
-  spinner.start("Checking for Turbo installation")
+  const s = spinner()
+  s.start("Checking for Turbo installation")
 
   const hasTurbo = await checkTurboInstalled()
 
   if (hasTurbo) {
-    spinner.succeed("Turbo detected - will clean workspaces")
+    s.stop("Turbo detected - will clean workspaces")
   } else {
-    spinner.warn("Turbo not found - skipping workspace clean")
+    s.stop("Turbo not found - skipping workspace clean")
   }
 
-  console.log()
-
-  // Prepare tasks
-  const tasks = [
-    {
-      name: "Root Clean",
-      command: ["git", "clean", "-xdf", "dist", "node_modules", ".cache"],
-      spinner: new Spinner(),
-    },
-  ]
+  let workspaces: string[] = []
 
   if (hasTurbo) {
-    tasks.push({
-      name: "Workspace Clean",
-      command: ["turbo", "run", "clean"],
-      spinner: new Spinner(),
-    })
+    const s2 = spinner()
+    s2.start("Scanning workspaces...")
+    workspaces = await getWorkspaces()
+    s2.stop(`Found ${workspaces.length} workspaces`)
   }
 
-  // Start all spinners
-  tasks[0]?.spinner.start(
-    "Cleaning root (git clean -xdf dist node_modules .cache)",
-  )
+  const s3 = spinner()
+  s3.start("Running clean operations...")
 
-  if (tasks.length > 1) {
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    console.log()
-    tasks[1]?.spinner.start("Cleaning workspaces (turbo run clean)")
-  }
+  try {
+    const results: CleanResult[] = []
 
-  // Run tasks in parallel
-  const results = await Promise.all(
-    tasks.map((task) => runCleanTask(task.name, task.command)),
-  )
+    // Clean root
+    const rootTargets = ["dist", "node_modules", ".cache", ".turbo"]
+    const rootDeleted = await checkExistingPaths(".", rootTargets)
+    await $`bun run clean:root`.quiet()
+    results.push({ success: true, name: "Root Clean", deleted: rootDeleted })
 
-  // Update spinners based on results
-  results.forEach((result, index) => {
-    const task = tasks[index]
-    if (result.success) {
-      if (result.name === "Root Clean") {
-        task?.spinner.succeed(
-          "Root clean completed - removed dist, node_modules, and .cache",
-        )
-      } else {
-        task?.spinner.succeed("Workspace clean completed")
+    // Clean workspaces
+    if (hasTurbo) {
+      for (const workspace of workspaces) {
+        const packageJson = await Bun.file(
+          join(workspace, "package.json"),
+        ).json() as PackageJson
+        const workspaceName = packageJson.name ?? workspace
+
+        const targets = await parseCleanTargets(workspace)
+        const deleted = await checkExistingPaths(workspace, targets)
+
+        if (targets.length > 0) {
+          const result = await $`cd ${workspace} && bun run clean`.quiet()
+          results.push({
+            success: result.exitCode === 0,
+            name: workspaceName,
+            deleted,
+          })
+        }
       }
+    }
+
+    s3.stop("Clean operations completed")
+
+    formatCleanResults(results, hasTurbo)
+
+    const hasFailures = results.some((r) => !r.success)
+
+    if (hasFailures) {
+      outro("❌ Clean operation completed with errors")
+      process.exit(1)
     } else {
-      task?.spinner.fail(`${result.name} failed`)
-      console.log("   Error:", result.error)
+      outro("✅ Repository successfully cleaned!")
     }
-  })
-
-  const hasFailures = results.some((result) => !result.success)
-
-  if (hasFailures) {
-    console.log("\n💥 Some clean tasks failed!")
+  } catch (error) {
+    s3.stop("Clean operation failed")
+    log.error(`Unexpected error during clean: ${error}`)
     process.exit(1)
-  } else {
-    console.log("\n🎉 All clean tasks completed successfully!")
-
-    if (!hasTurbo) {
-      console.log(
-        "ℹ️  Note: Turbo was not installed, so workspace cleaning was skipped.",
-      )
-    }
-
-    // Show the big warning
-    showWarning()
   }
 }
 
@@ -167,7 +224,7 @@ process.on("SIGINT", () => {
   process.exit(0)
 })
 
-main().catch((error) => {
+main().catch((error: unknown) => {
   console.error("\n💥 Unexpected error:", error)
   process.exit(1)
 })
