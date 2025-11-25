@@ -53,6 +53,6 @@
     "ci": "turbo run typecheck test format lint && bun run lint:ws"
   },
   "devDependencies": {
-    "turbo": "^2.5.5"
+    "turbo": "^2.6.1"
   }
 }
