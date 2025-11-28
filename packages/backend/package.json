@@ -27,7 +27,7 @@
     "format:fix": "prettier . --write --cache --cache-location .cache/.prettiercache --ignore-path ../../.prettierignore",
     "lint": "eslint . --cache --cache-location .cache/.eslintcache",
     "lint:fix": "eslint . --fix --cache --cache-location .cache/.eslintcache",
-    "clean": "git clean -xdf dist node_modules .cache .turbo",
+    "clean": "git clean -xdf dist node_modules .cache .turbo/cache",
     "init": "convex dev --until-success"
   },
   "dependencies": {

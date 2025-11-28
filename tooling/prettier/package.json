@@ -11,7 +11,7 @@
   "scripts": {
     "format": "prettier --check . --ignore-path ../../.prettierignore",
     "format:fix": "prettier --write . --ignore-path ../../.prettierignore",
-    "clean": "git clean -xdf dist node_modules .cache .turbo"
+    "clean": "git clean -xdf dist node_modules .cache .turbo/cache"
   },
   "dependencies": {
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
