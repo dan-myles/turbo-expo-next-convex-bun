@@ -16,7 +16,7 @@
       "@types/node": "^22.13.4",
       "convex": "^1.25.0",
       "zod": "^4.0.5",
-      "eslint": "^9.31.0",
+      "eslint": "^9.39.1",
       "typescript": "^5.9.3"
     },
     "catalogs": {
