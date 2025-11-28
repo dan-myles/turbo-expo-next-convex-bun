@@ -26,5 +26,4 @@ may include its own `AGENTS.md` file, which you must adhere to.
 - Avoid `try {} catch() {}` where possible, prefer to let exceptions bubble up
 - Avoid `else` statements where possible
 - Do not make useless helper functions, inline functionality unless the function is reusable or composable
-- Prefer Bun APIs over Node APIs
 - Prefer early returns over nested `if` statements
