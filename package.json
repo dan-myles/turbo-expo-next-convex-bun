@@ -58,7 +58,7 @@
     "lint:ws": "bunx sherif@latest",
     "lint:ws:fix": "bunx sherif@latest --fix",
     "clean": "bun scripts/clean",
-    "clean:root": "git clean -xdf dist node_modules .cache .turbo",
+    "clean:root": "git clean -xdf dist node_modules .cache .turbo/cache",
     "clean:ws": "turbo run clean",
     "ck": "turbo run typecheck test format lint && bun run lint:ws",
     "ck:fix": "turbo run format:fix lint:fix && bun run lint:ws:fix",

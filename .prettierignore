@@ -1,3 +1,10 @@
+###############################################################################
+# Repository-Wide Ignore File
+#
+# This file is used to ignore files which are not included the formatting
+# process in the repository.
+###############################################################################
+
 .sst
 .cache/
 _generated/

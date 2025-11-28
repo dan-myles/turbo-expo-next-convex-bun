@@ -1,3 +1,17 @@
+###############################################################################
+# Git Ignore File
+#
+# This file is used to ignore files which are not included in the version
+# control system.
+###############################################################################
+
+# dependencies (node_modules)
+node_modules
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
+npm-shrinkwrap.json
 # dependencies (bun install)
 node_modules
 expo-env.d.ts

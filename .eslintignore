@@ -1,3 +1,18 @@
+###############################################################################
+# Repository-Wide Ignore File
+#
+# This file is used to ignore files which are not included the linting process
+# in the repository.
+###############################################################################
+
+# Ignore files
+.DS_Store
+*.pem
+
+# Ignore folders
+.next/
+.turbo/
+
 # Dependencies
 .turbo/
 node_modules/
