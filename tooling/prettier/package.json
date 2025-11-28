@@ -14,12 +14,12 @@
     "clean": "git clean -xdf dist node_modules .cache .turbo"
   },
   "dependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
-    "@prettier/plugin-oxc": "^0.0.4",
-    "prettier": "catalog:",
-    "prettier-plugin-classnames": "^0.8.1",
-    "prettier-plugin-merge": "^0.8.0",
-    "prettier-plugin-tailwindcss": "^0.6.14"
+    "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
+    "@prettier/plugin-oxc": "catalog:prettier",
+    "prettier": "catalog:prettier",
+    "prettier-plugin-classnames": "catalog:prettier",
+    "prettier-plugin-merge": "catalog:prettier",
+    "prettier-plugin-tailwindcss": "catalog:prettier"
   },
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",

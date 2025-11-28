@@ -26,6 +26,14 @@
         "react-dom": "19.0.0",
         "@types/react": "19.0.0",
         "@types/react-dom": "19.0.0"
+      },
+      "prettier": {
+        "prettier": "^3.7.1",
+        "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+        "@prettier/plugin-oxc": "^0.1.1",
+        "prettier-plugin-classnames": "^0.8.5",
+        "prettier-plugin-merge": "^0.8.0",
+        "prettier-plugin-tailwindcss": "^0.7.1"
       }
     }
   },

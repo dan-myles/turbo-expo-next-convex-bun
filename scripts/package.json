@@ -17,6 +17,12 @@
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@types/bun": "catalog:",
+    "prettier": "catalog:prettier",
+    "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
+    "@prettier/plugin-oxc": "catalog:prettier",
+    "prettier-plugin-classnames": "catalog:prettier",
+    "prettier-plugin-merge": "catalog:prettier",
+    "prettier-plugin-tailwindcss": "catalog:prettier",
     "typescript": "catalog:"
   }
 }
