@@ -17,19 +17,20 @@
   "devDependencies": {
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
-    "@eslint/compat": "^2.0.0",
-    "@eslint/eslintrc": "^3.3.3",
     "@types/node": "catalog:",
-    "eslint": "catalog:",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint": "catalog:eslint",
+    "@eslint/compat": "catalog:eslint",
+    "@eslint/eslintrc": "catalog:eslint",
+    "eslint-plugin-react": "catalog:eslint",
+    "eslint-plugin-react-hooks": "catalog:eslint",
+    "typescript-eslint": "catalog:eslint",
     "prettier": "catalog:prettier",
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
     "@prettier/plugin-oxc": "catalog:prettier",
     "prettier-plugin-classnames": "catalog:prettier",
+    "prettier-plugin-ember-template-tag": "catalog:prettier",
     "prettier-plugin-merge": "catalog:prettier",
     "prettier-plugin-tailwindcss": "catalog:prettier",
-    "typescript": "catalog:",
-    "typescript-eslint": "^8.48.0"
+    "typescript": "catalog:"
   }
 }

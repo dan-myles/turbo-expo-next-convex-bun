@@ -18,6 +18,7 @@
     "@prettier/plugin-oxc": "catalog:prettier",
     "prettier": "catalog:prettier",
     "prettier-plugin-classnames": "catalog:prettier",
+    "prettier-plugin-ember-template-tag": "catalog:prettier",
     "prettier-plugin-merge": "catalog:prettier",
     "prettier-plugin-tailwindcss": "catalog:prettier"
   },
