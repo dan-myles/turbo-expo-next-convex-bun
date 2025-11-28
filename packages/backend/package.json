@@ -37,17 +37,17 @@
     "@acme/eslint-config": "workspace:*",
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
-    "eslint": "catalog:eslint",
     "@eslint/compat": "catalog:eslint",
     "@eslint/eslintrc": "catalog:eslint",
-    "typescript-eslint": "catalog:eslint",
-    "prettier": "catalog:prettier",
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
     "@prettier/plugin-oxc": "catalog:prettier",
+    "eslint": "catalog:eslint",
+    "prettier": "catalog:prettier",
     "prettier-plugin-classnames": "catalog:prettier",
     "prettier-plugin-ember-template-tag": "catalog:prettier",
     "prettier-plugin-merge": "catalog:prettier",
     "prettier-plugin-tailwindcss": "catalog:prettier",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:eslint"
   }
 }

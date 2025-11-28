@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
-import { intro, outro, spinner, log } from "@clack/prompts"
-import { $ } from "bun"
 import { existsSync } from "node:fs"
 import { join } from "node:path"
+import { intro, log, outro, spinner } from "@clack/prompts"
+import { $ } from "bun"
 
 interface CleanResult {
   name: string
@@ -28,7 +28,7 @@ async function checkTurboInstalled(): Promise<boolean> {
 }
 
 async function getWorkspaces(): Promise<string[]> {
-  const rootPackage = await Bun.file("package.json").json() as PackageJson & {
+  const rootPackage = (await Bun.file("package.json").json()) as PackageJson & {
     workspaces?: { packages?: string[] }
   }
   const workspacePatterns = rootPackage.workspaces?.packages ?? []
@@ -49,16 +49,14 @@ async function getWorkspaces(): Promise<string[]> {
   return workspaces
 }
 
-async function parseCleanTargets(
-  workspacePath: string,
-): Promise<string[]> {
+async function parseCleanTargets(workspacePath: string): Promise<string[]> {
   const packageJsonPath = join(workspacePath, "package.json")
 
   if (!existsSync(packageJsonPath)) {
     return []
   }
 
-  const packageJson = await Bun.file(packageJsonPath).json() as PackageJson
+  const packageJson = (await Bun.file(packageJsonPath).json()) as PackageJson
   const cleanScript = packageJson.scripts?.clean
 
   if (!cleanScript) {
@@ -70,7 +68,7 @@ async function parseCleanTargets(
     return []
   }
 
-  return match[1].split(/\s+/).filter(Boolean)
+  return match[1]?.split(/\s+/).filter(Boolean)!
 }
 
 async function checkExistingPaths(
@@ -109,8 +107,6 @@ async function runCleanTask(
   }
 }
 
-
-
 function formatCleanResults(results: CleanResult[], hasTurbo: boolean): void {
   const hasFailures = results.some((r) => !r.success)
 
@@ -138,7 +134,9 @@ function formatCleanResults(results: CleanResult[], hasTurbo: boolean): void {
   log.message("")
 
   if (!hasTurbo) {
-    log.info("Note: Turbo was not installed, so workspace cleaning was skipped.")
+    log.info(
+      "Note: Turbo was not installed, so workspace cleaning was skipped.",
+    )
   }
 }
 
@@ -180,9 +178,9 @@ async function main(): Promise<void> {
     // Clean workspaces
     if (hasTurbo) {
       for (const workspace of workspaces) {
-        const packageJson = await Bun.file(
+        const packageJson = (await Bun.file(
           join(workspace, "package.json"),
-        ).json() as PackageJson
+        ).json()) as PackageJson
         const workspaceName = packageJson.name ?? workspace
 
         const targets = await parseCleanTargets(workspace)
