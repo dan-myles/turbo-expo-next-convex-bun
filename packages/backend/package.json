@@ -25,8 +25,8 @@
     "test": "echo 'NO TEST SUITE CONFIGURED'",
     "format": "prettier --check . --ignore-path ../../.prettierignore",
     "format:fix": "prettier --write . --ignore-path ../../.prettierignore",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix",
+    "lint": "bunx eslint",
+    "lint:fix": "bunx eslint --fix",
     "clean": "git clean -xdf dist node_modules .cache .turbo",
     "init": "convex dev --until-success"
   },
