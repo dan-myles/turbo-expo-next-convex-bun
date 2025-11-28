@@ -1,5 +1,5 @@
 {
-  "name": "native",
+  "name": "@acme/native",
   "main": "expo-router/entry",
   "private": true,
   "scripts": {
