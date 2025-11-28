@@ -17,7 +17,7 @@
       "convex": "^1.25.0",
       "zod": "^4.0.5",
       "eslint": "^9.31.0",
-      "typescript": "^5.8.3"
+      "typescript": "^5.9.3"
     },
     "catalogs": {
       "react18": {
