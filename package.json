@@ -17,6 +17,7 @@
       "convex": "^1.29.3",
       "zod": "^4.1.13",
       "eslint": "^9.39.1",
+      "prettier": "^3.7.1",
       "typescript": "^5.9.3"
     },
     "catalogs": {
