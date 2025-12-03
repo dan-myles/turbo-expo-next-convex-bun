@@ -5,6 +5,9 @@ export const env = createEnv({
   emptyStringAsUndefined: true,
   runtimeEnv: process.env,
   server: {
-    LOG_LEVEL: z.optional(z.enum(["debug", "info", "warn", "error"])),
+    LOG_LEVEL: z
+      .enum(["debug", "info", "warn", "error"])
+      .optional()
+      .default("debug"),
   },
 })
