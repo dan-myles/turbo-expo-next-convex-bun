@@ -32,7 +32,7 @@
     "init": "convex dev --until-success"
   },
   "dependencies": {
-    "convex": "catalogs:convex"
+    "convex": "^1.29.3"
   },
   "devDependencies": {
     "@acme/eslint-config": "workspace:*",
