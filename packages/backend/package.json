@@ -6,17 +6,18 @@
   "type": "module",
   "prettier": "@acme/prettier-config",
   "exports": {
-    "./api": {
+    "./_generated/api": {
       "types": "./convex/_generated/api.d.ts",
       "default": "./convex/_generated/api.js"
     },
-    "./server": {
+    "./_generated/server": {
       "types": "./convex/_generated/server.d.ts",
       "default": "./convex/_generated/server.js"
     },
-    "./dataModel": {
+    "./_generated/dataModel": {
       "types": "./convex/_generated/dataModel.d.ts"
-    }
+    },
+    "./*": "./convex/*.ts"
   },
   "scripts": {
     "build": "tsc",

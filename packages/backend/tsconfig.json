@@ -3,12 +3,15 @@
   "compilerOptions": {
     /* These compiler options are required by Convex */
     "target": "ESNext",
-    "lib": ["ES2021", "dom"],
+    "lib": ["ES2022", "dom"],
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@acme/backend/*": ["./convex/*"]
+    }
   },
   "include": ["./**/*"],
-  "exclude": ["node_modules/"]
+  "exclude": ["node_modules/", "eslint.config.mjs", "legacy/"]
 }
