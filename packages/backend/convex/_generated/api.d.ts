@@ -9,6 +9,7 @@
  */
 
 import type * as lib_env from "../lib/env.js";
+import type * as lib_errors from "../lib/errors.js";
 import type * as lib_logger from "../lib/logger.js";
 import type * as lib_middleware from "../lib/middleware.js";
 import type * as modules_task_mutations from "../modules/task/mutations.js";
@@ -23,6 +24,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   "lib/env": typeof lib_env;
+  "lib/errors": typeof lib_errors;
   "lib/logger": typeof lib_logger;
   "lib/middleware": typeof lib_middleware;
   "modules/task/mutations": typeof modules_task_mutations;
