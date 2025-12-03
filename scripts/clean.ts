@@ -170,7 +170,7 @@ async function main(): Promise<void> {
     const results: CleanResult[] = []
 
     // Clean root
-    const rootTargets = ["dist", "node_modules", ".cache", ".turbo"]
+    const rootTargets = ["dist", "node_modules", ".cache", ".turbo/cache"]
     const rootDeleted = await checkExistingPaths(".", rootTargets)
     await $`bun run clean:root`.quiet()
     results.push({ success: true, name: "Root Clean", deleted: rootDeleted })

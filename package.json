@@ -65,6 +65,6 @@
     "pr": "bun run ck:fix && bun run ck"
   },
   "devDependencies": {
-    "turbo": "^2.6.1"
+    "turbo": "^2.6.2"
   }
 }
