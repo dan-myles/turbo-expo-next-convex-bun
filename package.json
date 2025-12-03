@@ -19,6 +19,7 @@
     },
     "catalogs": {
       "convex": {
+        "convex": "^1.30.0",
         "convex-helpers": "^0.1.106",
         "zodvex": "^0.2.5"
       },

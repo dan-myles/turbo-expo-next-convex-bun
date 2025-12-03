@@ -32,7 +32,8 @@
     "init": "convex dev --until-success"
   },
   "dependencies": {
-    "convex": "^1.30.0"
+    "convex": "catalog:convex",
+    "zodvex": "catalog:convex"
   },
   "devDependencies": {
     "@acme/eslint-config": "workspace:*",
