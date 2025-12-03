@@ -1,3 +1,19 @@
+/**
+ * Simple structured logger for Convex runtime.
+ *
+ * Most logging libraries (pino, winston, etc.) don't work in Convex's runtime
+ * environment, so this is a lightweight wrapper around console.log that provides
+ * structured JSON output with timestamps, log levels, and arbitrary context.
+ *
+ * Log level is controlled via the LOG_LEVEL environment variable.
+ *
+ * @example
+ * logger.info("Task created", { taskId: "123", userId: "456" })
+ * // Output: { timestamp: "...", level: "INFO", message: "Task created", taskId: "123", userId: "456" }
+ *
+ * @example
+ * logger.error("Failed to create task", { error: err.message, cause: err.cause })
+ */
 import { env } from "./env"
 
 export type LogLevel = "info" | "error" | "warn" | "debug"
