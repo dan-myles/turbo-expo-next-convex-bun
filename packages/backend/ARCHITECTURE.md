@@ -38,6 +38,7 @@ convex/
 │       └── lib.ts
 │
 ├── lib/                           # Shared utilities across modules
+│   ├── middleware.ts              # Zod-wrapped query/mutation/action builders
 │   ├── db.ts                      # Database helpers
 │   ├── auth.ts                    # Auth utilities
 │   └── validation.ts              # Shared validators
@@ -47,6 +48,52 @@ convex/
 ```
 
 ## Core Patterns
+
+### Middleware
+
+The `lib/middleware.ts` file exports Zod-wrapped versions of Convex's `query`, `mutation`, and `action` builders using `zodvex`. This enables using Zod schemas directly in function definitions:
+
+```typescript
+// convex/lib/middleware.ts
+import { zActionBuilder, zMutationBuilder, zQueryBuilder } from "zodvex"
+import {
+  action as convexAction,
+  mutation as convexMutation,
+  query as convexQuery,
+} from "../_generated/server"
+
+export const query = zQueryBuilder(convexQuery)
+export const mutation = zMutationBuilder(convexMutation)
+export const action = zActionBuilder(convexAction)
+```
+
+**Usage in public functions:**
+
+```typescript
+// convex/modules/task/mutations.ts
+import { z } from "zod"
+import { mutation } from "../../lib/middleware"
+import { createTaskInput } from "./mutation_validators"
+
+export const create = mutation({
+  args: createTaskInput,
+  handler: async (ctx, { text, priority }) => {
+    return await ctx.db.insert("tasks", {
+      text,
+      priority: priority ?? "medium",
+      completed: false,
+      createdAt: Date.now(),
+    })
+  },
+})
+```
+
+**When to use middleware vs raw Convex:**
+
+| Use Case | Import From |
+|----------|-------------|
+| Public functions with Zod validators | `../../lib/middleware` |
+| Internal functions with Convex validators | `../../_generated/server` |
 
 ### Table Definitions
 
@@ -183,19 +230,19 @@ export function TaskForm() {
 
 Public and internal functions live in separate files for clear separation.
 
-**Public functions** use Zod validators in separate files (for frontend sharing):
+**Public functions** use the Zod-wrapped builders from `lib/middleware.ts` with validators from separate files:
 
 ```typescript
 // convex/modules/task/mutations.ts
-import { v } from "convex/values"
-import { mutation } from "../../_generated/server"
+import { mutation } from "../../lib/middleware"
+import { createTaskInput } from "./mutation_validators"
 
 export const create = mutation({
-  args: { text: v.string() },
-  returns: v.id("tasks"),
-  handler: async (ctx, { text }) => {
+  args: createTaskInput,
+  handler: async (ctx, { text, priority }) => {
     return await ctx.db.insert("tasks", {
       text,
+      priority: priority ?? "medium",
       completed: false,
       createdAt: Date.now(),
     })
