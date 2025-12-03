@@ -94,13 +94,48 @@ export const action = zActionBuilder(convexAction)
 
 ### Error Handling
 
+All errors follow a consistent shape using `BaseError<Code>` with `code`, `message`, and optional `cause`.
+
+#### Base Error Type
+
+```typescript
+// convex/lib/errors.ts
+export type BaseError<Code extends string = string> = {
+  code: Code
+  message?: string
+  cause?: unknown
+}
+```
+
+#### Error Checking Functions
+
+Use `isError()` and `isOneOf()` for type-safe error checking:
+
+```typescript
+// Check single error code
+export function isError<T extends string>(
+  error: BaseError<string>,
+  code: T
+): error is BaseError<T> {
+  return error.code === code
+}
+
+// Check multiple error codes
+export function isOneOf<T extends string>(
+  error: BaseError<string>,
+  codes: readonly T[]
+): error is BaseError<T> {
+  return codes.includes(error.code as T)
+}
+```
+
 #### Database Errors
 
 General database errors live in `lib/errors.ts`:
 
 ```typescript
 // convex/lib/errors.ts
-export enum DatabaseError {
+export enum DatabaseErrorCode {
   QUERY_FAILED = "QUERY_FAILED",
   INSERT_FAILED = "INSERT_FAILED",
   UPDATE_FAILED = "UPDATE_FAILED",
@@ -108,25 +143,118 @@ export enum DatabaseError {
   NOT_FOUND = "NOT_FOUND",
 }
 
+export type DatabaseError = BaseError<DatabaseErrorCode>
+
 export const dbError = {
-  queryFailed: () => DatabaseError.QUERY_FAILED,
-  insertFailed: () => DatabaseError.INSERT_FAILED,
-  updateFailed: () => DatabaseError.UPDATE_FAILED,
-  deleteFailed: () => DatabaseError.DELETE_FAILED,
-  notFound: () => DatabaseError.NOT_FOUND,
+  queryFailed: (cause?: unknown): DatabaseError => ({
+    code: DatabaseErrorCode.QUERY_FAILED,
+    message: "Database query failed",
+    cause,
+  }),
+
+  insertFailed: (cause?: unknown): DatabaseError => ({
+    code: DatabaseErrorCode.INSERT_FAILED,
+    message: "Database insert failed",
+    cause,
+  }),
+
+  updateFailed: (cause?: unknown): DatabaseError => ({
+    code: DatabaseErrorCode.UPDATE_FAILED,
+    message: "Database update failed",
+    cause,
+  }),
+
+  deleteFailed: (cause?: unknown): DatabaseError => ({
+    code: DatabaseErrorCode.DELETE_FAILED,
+    message: "Database delete failed",
+    cause,
+  }),
+
+  notFound: (id?: string): DatabaseError => ({
+    code: DatabaseErrorCode.NOT_FOUND,
+    message: id ? `Resource not found: ${id}` : "Resource not found",
+  }),
 }
 ```
 
 #### Module-Specific Errors
 
-Each service defines its own error enum for business logic errors:
+Each service defines its own error enum and type extending `BaseError`:
 
 ```typescript
 // convex/modules/task/services/mutations/errors.ts
-export enum TaskMutationError {
+import { BaseError } from "@acme/backend/lib/errors"
+
+export enum TaskMutationErrorCode {
   DUPLICATE_TASK = "DUPLICATE_TASK",
   INVALID_PRIORITY = "INVALID_PRIORITY",
   TEXT_TOO_LONG = "TEXT_TOO_LONG",
+}
+
+export type TaskMutationError = BaseError<TaskMutationErrorCode>
+
+export const taskMutationError = {
+  duplicateTask: (text: string): TaskMutationError => ({
+    code: TaskMutationErrorCode.DUPLICATE_TASK,
+    message: `Task already exists: ${text}`,
+  }),
+
+  invalidPriority: (priority: string): TaskMutationError => ({
+    code: TaskMutationErrorCode.INVALID_PRIORITY,
+    message: `Invalid priority: ${priority}`,
+  }),
+
+  textTooLong: (length: number): TaskMutationError => ({
+    code: TaskMutationErrorCode.TEXT_TOO_LONG,
+    message: `Task text too long: ${length} characters (max 500)`,
+  }),
+}
+```
+
+#### Error Checking in Handlers
+
+```typescript
+// convex/modules/task/queries.ts
+import { query } from "@acme/backend/lib/middleware"
+import { DatabaseErrorCode, isError, isOneOf } from "@acme/backend/lib/errors"
+import { logger } from "@acme/backend/lib/logger"
+import * as TaskValidators from "./services/queries/validators"
+import * as TaskQueries from "./services/queries"
+
+export const get = query({
+  args: TaskValidators.getTaskInput,
+  handler: async (ctx, args) => {
+    const result = await TaskQueries.get(ctx, args)
+
+    if (result.isErr()) {
+      const error = result.error
+
+      if (isError(error, DatabaseErrorCode.NOT_FOUND)) {
+        logger.warn("Task not found", { taskId: args.id })
+        return null
+      }
+
+      if (isError(error, DatabaseErrorCode.QUERY_FAILED)) {
+        logger.error("Database query failed", {
+          message: error.message,
+          cause: error.cause,
+          args,
+        })
+        throw new Error("Failed to get task")
+      }
+    }
+
+    return result.value
+  },
+})
+```
+
+#### Checking Multiple Error Codes
+
+```typescript
+if (isOneOf(error, [DatabaseErrorCode.QUERY_FAILED, DatabaseErrorCode.UPDATE_FAILED])) {
+  logger.error("Database operation failed", { error, args })
+  throw new Error("Database error occurred")
 }
 ```
 
@@ -213,9 +341,25 @@ export type GetTaskOutput = Doc<"tasks"> | null
 
 ```typescript
 // convex/modules/task/services/queries/errors.ts
-export enum TaskQueryError {
+import { BaseError } from "@acme/backend/lib/errors"
+
+export enum TaskQueryErrorCode {
   INVALID_FILTER = "INVALID_FILTER",
   INVALID_DATE_RANGE = "INVALID_DATE_RANGE",
+}
+
+export type TaskQueryError = BaseError<TaskQueryErrorCode>
+
+export const taskQueryError = {
+  invalidFilter: (filter: string): TaskQueryError => ({
+    code: TaskQueryErrorCode.INVALID_FILTER,
+    message: `Invalid filter: ${filter}`,
+  }),
+
+  invalidDateRange: (start: number, end: number): TaskQueryError => ({
+    code: TaskQueryErrorCode.INVALID_DATE_RANGE,
+    message: `Invalid date range: ${start} to ${end}`,
+  }),
 }
 ```
 
@@ -256,7 +400,7 @@ export async function get(
   )
   
   if (result.isErr()) return result
-  if (!result.value) return err(DatabaseError.NOT_FOUND)
+  if (!result.value) return err(dbError.notFound(args.id))
   
   return result
 }
@@ -307,10 +451,31 @@ export type ToggleTaskOutput = void
 
 ```typescript
 // convex/modules/task/services/mutations/errors.ts
-export enum TaskMutationError {
+import { BaseError } from "@acme/backend/lib/errors"
+
+export enum TaskMutationErrorCode {
   DUPLICATE_TASK = "DUPLICATE_TASK",
   INVALID_PRIORITY = "INVALID_PRIORITY",
   TEXT_TOO_LONG = "TEXT_TOO_LONG",
+}
+
+export type TaskMutationError = BaseError<TaskMutationErrorCode>
+
+export const taskMutationError = {
+  duplicateTask: (text: string): TaskMutationError => ({
+    code: TaskMutationErrorCode.DUPLICATE_TASK,
+    message: `Task already exists: ${text}`,
+  }),
+
+  invalidPriority: (priority: string): TaskMutationError => ({
+    code: TaskMutationErrorCode.INVALID_PRIORITY,
+    message: `Invalid priority: ${priority}`,
+  }),
+
+  textTooLong: (length: number): TaskMutationError => ({
+    code: TaskMutationErrorCode.TEXT_TOO_LONG,
+    message: `Task text too long: ${length} characters (max 500)`,
+  }),
 }
 ```
 
@@ -330,12 +495,16 @@ import {
   ToggleTaskInput,
   ToggleTaskOutput,
 } from "./types"
-import { TaskMutationError } from "./errors"
+import { TaskMutationError, taskMutationError } from "./errors"
 
 export async function create(
   ctx: MutationCtx,
   args: CreateTaskInput
 ): Promise<Result<CreateTaskOutput, DatabaseError | TaskMutationError>> {
+  if (args.text.length > 500) {
+    return err(taskMutationError.textTooLong(args.text.length))
+  }
+
   return await fromPromise(
     ctx.db.insert("tasks", {
       text: args.text,
@@ -354,7 +523,7 @@ export async function update(
   const task = await ctx.db.get(args.id as Id<"tasks">)
   
   if (!task) {
-    return err(DatabaseError.NOT_FOUND)
+    return err(dbError.notFound(args.id))
   }
   
   return await fromPromise(
@@ -373,7 +542,7 @@ export async function toggle(
   const task = await ctx.db.get(args.id as Id<"tasks">)
   
   if (!task) {
-    return err(DatabaseError.NOT_FOUND)
+    return err(dbError.notFound(args.id))
   }
   
   return await fromPromise(
@@ -410,9 +579,27 @@ export type BulkCreateTasksOutput = Id<"tasks">[]
 
 ```typescript
 // convex/modules/task/services/internal_mutations/errors.ts
-export enum TaskInternalMutationError {
+import { BaseError } from "@acme/backend/lib/errors"
+
+export enum TaskInternalMutationErrorCode {
   CLEANUP_FAILED = "CLEANUP_FAILED",
   BULK_INSERT_FAILED = "BULK_INSERT_FAILED",
+}
+
+export type TaskInternalMutationError = BaseError<TaskInternalMutationErrorCode>
+
+export const taskInternalMutationError = {
+  cleanupFailed: (cause?: unknown): TaskInternalMutationError => ({
+    code: TaskInternalMutationErrorCode.CLEANUP_FAILED,
+    message: "Failed to cleanup tasks",
+    cause,
+  }),
+
+  bulkInsertFailed: (cause?: unknown): TaskInternalMutationError => ({
+    code: TaskInternalMutationErrorCode.BULK_INSERT_FAILED,
+    message: "Failed to bulk insert tasks",
+    cause,
+  }),
 }
 ```
 
@@ -483,7 +670,7 @@ Handlers import services, unwrap Result types, log errors, and throw when necess
 ```typescript
 // convex/modules/task/queries.ts
 import { query } from "@acme/backend/lib/middleware"
-import { DatabaseError } from "@acme/backend/lib/errors"
+import { DatabaseErrorCode, isError } from "@acme/backend/lib/errors"
 import { logger } from "@acme/backend/lib/logger"
 import * as TaskValidators from "./services/queries/validators"
 import * as TaskQueries from "./services/queries"
@@ -494,7 +681,12 @@ export const list = query({
     const result = await TaskQueries.list(ctx, args)
     
     if (result.isErr()) {
-      logger.error("Failed to list tasks", { error: result.error, args })
+      logger.error("Failed to list tasks", {
+        code: result.error.code,
+        message: result.error.message,
+        cause: result.error.cause,
+        args,
+      })
       throw new Error("Failed to list tasks")
     }
     
@@ -508,13 +700,18 @@ export const get = query({
     const result = await TaskQueries.get(ctx, args)
     
     if (result.isErr()) {
-      switch (result.error) {
-        case DatabaseError.NOT_FOUND:
-          return null
-          
-        case DatabaseError.QUERY_FAILED:
-          logger.error("Failed to get task", { error: result.error, args })
-          throw new Error("Failed to get task")
+      if (isError(result.error, DatabaseErrorCode.NOT_FOUND)) {
+        return null
+      }
+      
+      if (isError(result.error, DatabaseErrorCode.QUERY_FAILED)) {
+        logger.error("Failed to get task", {
+          code: result.error.code,
+          message: result.error.message,
+          cause: result.error.cause,
+          args,
+        })
+        throw new Error("Failed to get task")
       }
     }
     
@@ -528,11 +725,11 @@ export const get = query({
 ```typescript
 // convex/modules/task/mutations.ts
 import { mutation } from "@acme/backend/lib/middleware"
-import { DatabaseError } from "@acme/backend/lib/errors"
+import { DatabaseErrorCode, isError } from "@acme/backend/lib/errors"
 import { logger } from "@acme/backend/lib/logger"
 import * as TaskValidators from "./services/mutations/validators"
 import * as TaskMutations from "./services/mutations"
-import { TaskMutationError } from "./services/mutations/errors"
+import { TaskMutationErrorCode } from "./services/mutations/errors"
 
 export const create = mutation({
   args: TaskValidators.createTaskInput,
@@ -540,13 +737,18 @@ export const create = mutation({
     const result = await TaskMutations.create(ctx, args)
     
     if (result.isErr()) {
-      switch (result.error) {
-        case DatabaseError.INSERT_FAILED:
-          logger.error("Failed to create task", { error: result.error, args })
-          throw new Error("Failed to create task")
-          
-        case TaskMutationError.TEXT_TOO_LONG:
-          throw new Error("Task text exceeds maximum length")
+      if (isError(result.error, DatabaseErrorCode.INSERT_FAILED)) {
+        logger.error("Failed to create task", {
+          code: result.error.code,
+          message: result.error.message,
+          cause: result.error.cause,
+          args,
+        })
+        throw new Error("Failed to create task")
+      }
+      
+      if (isError(result.error, TaskMutationErrorCode.TEXT_TOO_LONG)) {
+        throw new Error(result.error.message)
       }
     }
     
@@ -561,13 +763,18 @@ export const update = mutation({
     const result = await TaskMutations.update(ctx, args)
     
     if (result.isErr()) {
-      switch (result.error) {
-        case DatabaseError.NOT_FOUND:
-          throw new Error("Task not found")
-          
-        case DatabaseError.UPDATE_FAILED:
-          logger.error("Failed to update task", { error: result.error, args })
-          throw new Error("Failed to update task")
+      if (isError(result.error, DatabaseErrorCode.NOT_FOUND)) {
+        throw new Error(result.error.message)
+      }
+      
+      if (isError(result.error, DatabaseErrorCode.UPDATE_FAILED)) {
+        logger.error("Failed to update task", {
+          code: result.error.code,
+          message: result.error.message,
+          cause: result.error.cause,
+          args,
+        })
+        throw new Error("Failed to update task")
       }
     }
     
@@ -581,13 +788,18 @@ export const toggle = mutation({
     const result = await TaskMutations.toggle(ctx, args)
     
     if (result.isErr()) {
-      switch (result.error) {
-        case DatabaseError.NOT_FOUND:
-          throw new Error("Task not found")
-          
-        case DatabaseError.UPDATE_FAILED:
-          logger.error("Failed to toggle task", { error: result.error, args })
-          throw new Error("Failed to toggle task")
+      if (isError(result.error, DatabaseErrorCode.NOT_FOUND)) {
+        throw new Error(result.error.message)
+      }
+      
+      if (isError(result.error, DatabaseErrorCode.UPDATE_FAILED)) {
+        logger.error("Failed to toggle task", {
+          code: result.error.code,
+          message: result.error.message,
+          cause: result.error.cause,
+          args,
+        })
+        throw new Error("Failed to toggle task")
       }
     }
     
@@ -604,7 +816,6 @@ Internal handlers use Convex validators inline:
 // convex/modules/task/internal_mutations.ts
 import { v } from "convex/values"
 import { internalMutation } from "@acme/backend/_generated/server"
-import { DatabaseError } from "@acme/backend/lib/errors"
 import { logger } from "@acme/backend/lib/logger"
 import * as TaskInternalMutations from "./services/internal_mutations"
 
@@ -615,7 +826,12 @@ export const cleanup = internalMutation({
     const result = await TaskInternalMutations.cleanup(ctx, args)
     
     if (result.isErr()) {
-      logger.error("Failed to cleanup tasks", { error: result.error, args })
+      logger.error("Failed to cleanup tasks", {
+        code: result.error.code,
+        message: result.error.message,
+        cause: result.error.cause,
+        args,
+      })
       throw new Error("Failed to cleanup tasks")
     }
     
@@ -631,7 +847,12 @@ export const bulkCreate = internalMutation({
     const result = await TaskInternalMutations.bulkCreate(ctx, args)
     
     if (result.isErr()) {
-      logger.error("Failed to bulk create tasks", { error: result.error, args })
+      logger.error("Failed to bulk create tasks", {
+        code: result.error.code,
+        message: result.error.message,
+        cause: result.error.cause,
+        args,
+      })
       throw new Error("Failed to bulk create tasks")
     }
     
@@ -725,7 +946,7 @@ File structure maps directly to API paths:
 | `index.ts` | Service functions | Service functions |
 | `types.ts` | Input (z.infer) + Output | Input + Output (direct) |
 | `validators.ts` | Zod schemas | ❌ Not needed |
-| `errors.ts` | Error enums | Error enums |
+| `errors.ts` | Error enum + type + factory | Error enum + type + factory |
 
 ### Scaling Services
 
