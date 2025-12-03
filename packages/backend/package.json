@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "convex": "catalog:convex",
+    "neverthrow": "catalog:",
     "zod": "catalog:",
     "zodvex": "catalog:convex"
   },
