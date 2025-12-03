@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as lib_middleware from "../lib/middleware.js";
 import type * as modules_task_mutations from "../modules/task/mutations.js";
 import type * as modules_task_queries from "../modules/task/queries.js";
 import type * as tables_tasks from "../tables/tasks.js";
@@ -19,6 +20,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "lib/middleware": typeof lib_middleware;
   "modules/task/mutations": typeof modules_task_mutations;
   "modules/task/queries": typeof modules_task_queries;
   "tables/tasks": typeof tables_tasks;
