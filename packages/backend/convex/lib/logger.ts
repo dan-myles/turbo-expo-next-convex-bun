@@ -2,18 +2,13 @@ import { env } from "./env"
 
 export type LogLevel = "info" | "error" | "warn" | "debug"
 
-// Base interface for the context object that users provide
-// Using 'unknown' as default for values is safer than 'any'
 export interface BaseLogContext {
   [key: string]: unknown
 }
 
-// This interface describes the final object that will be logged,
-// combining the logger's internal fields with the user's context.
-// T is the specific context type provided by the user (or BaseLogContext by default).
 export type FinalLogEntry<T extends BaseLogContext = BaseLogContext> = {
   timestamp: string
-  level: string // The level as an uppercase string (e.g., "INFO", "ERROR")
+  level: string
   message: string
 } & T
 
@@ -59,7 +54,6 @@ class Logger {
     )
   }
 
-  // The generic _log method now explicitly uses FinalLogEntry for its internal structure
   private _log<T extends BaseLogContext>(
     level: LogLevel,
     entry: { message: string } & T,
@@ -69,10 +63,9 @@ class Logger {
     }
 
     const timestamp = new Date().toISOString()
-    // This is where the 'level' field is added to the log object.
     const formattedEntry: FinalLogEntry<T> = {
       timestamp,
-      level: level.toUpperCase(), // <-- This adds the level field
+      level: level.toUpperCase(),
       ...entry,
     }
 
