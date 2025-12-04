@@ -15,7 +15,7 @@ export default (): ExpoConfig => ({
     backgroundColor: "#ffffff",
   },
   ios: {
-    supportsTablet: true,
+    supportsTablet: false,
   },
   android: {
     adaptiveIcon: {
