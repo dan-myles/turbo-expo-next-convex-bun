@@ -59,9 +59,9 @@ Always use the `@acme/backend/*` path alias for imports:
 
 ```typescript
 // Good
-import { DatabaseError, dbError } from "@acme/backend/lib/errors"
-import { QueryCtx } from "@acme/backend/_generated/server"
 import { Id } from "@acme/backend/_generated/dataModel"
+import { QueryCtx } from "@acme/backend/_generated/server"
+import { DatabaseError, dbError } from "@acme/backend/lib/errors"
 
 // Avoid
 import { DatabaseError } from "../../lib/errors"
@@ -74,6 +74,7 @@ The `lib/middleware.ts` file exports Zod-wrapped versions of Convex's `query`, `
 ```typescript
 // convex/lib/middleware.ts
 import { zActionBuilder, zMutationBuilder, zQueryBuilder } from "zodvex"
+
 import {
   action as convexAction,
   mutation as convexMutation,
@@ -87,9 +88,9 @@ export const action = zActionBuilder(convexAction)
 
 **When to use middleware vs raw Convex:**
 
-| Use Case | Import From |
-|----------|-------------|
-| Public functions with Zod validators | `@acme/backend/lib/middleware` |
+| Use Case                                  | Import From                       |
+| ----------------------------------------- | --------------------------------- |
+| Public functions with Zod validators      | `@acme/backend/lib/middleware`    |
 | Internal functions with Convex validators | `@acme/backend/_generated/server` |
 
 ### Error Handling
@@ -115,7 +116,7 @@ Use `isError()` and `isOneOf()` for type-safe error checking:
 // Check single error code
 export function isError<T extends string>(
   error: BaseError<string>,
-  code: T
+  code: T,
 ): error is BaseError<T> {
   return error.code === code
 }
@@ -123,7 +124,7 @@ export function isError<T extends string>(
 // Check multiple error codes
 export function isOneOf<T extends string>(
   error: BaseError<string>,
-  codes: readonly T[]
+  codes: readonly T[],
 ): error is BaseError<T> {
   return codes.includes(error.code as T)
 }
@@ -215,11 +216,12 @@ export const taskMutationError = {
 
 ```typescript
 // convex/modules/task/queries.ts
-import { query } from "@acme/backend/lib/middleware"
 import { DatabaseErrorCode, isError, isOneOf } from "@acme/backend/lib/errors"
 import { logger } from "@acme/backend/lib/logger"
-import * as TaskValidators from "./services/queries/validators"
+import { query } from "@acme/backend/lib/middleware"
+
 import * as TaskQueries from "./services/queries"
+import * as TaskValidators from "./services/queries/validators"
 
 export const get = query({
   args: TaskValidators.getTaskInput,
@@ -252,7 +254,12 @@ export const get = query({
 #### Checking Multiple Error Codes
 
 ```typescript
-if (isOneOf(error, [DatabaseErrorCode.QUERY_FAILED, DatabaseErrorCode.UPDATE_FAILED])) {
+if (
+  isOneOf(error, [
+    DatabaseErrorCode.QUERY_FAILED,
+    DatabaseErrorCode.UPDATE_FAILED,
+  ])
+) {
   logger.error("Database operation failed", { error, args })
   throw new Error("Database error occurred")
 }
@@ -280,6 +287,7 @@ The root schema imports and combines all tables:
 ```typescript
 // convex/schema.ts
 import { defineSchema } from "convex/server"
+
 import { Tasks } from "./tables/tasks"
 
 export default defineSchema({
@@ -295,12 +303,12 @@ Services contain business logic and return `Promise<Result<T, E>>` using neverth
 
 Each service type (queries, mutations, etc.) has its own folder:
 
-| File | Purpose |
-|------|---------|
-| `index.ts` | Service functions returning `Promise<Result<T, E>>` |
-| `types.ts` | Input types (from `z.infer`) and output types |
-| `validators.ts` | Zod schemas for public services |
-| `errors.ts` | Module-specific error enums |
+| File            | Purpose                                             |
+| --------------- | --------------------------------------------------- |
+| `index.ts`      | Service functions returning `Promise<Result<T, E>>` |
+| `types.ts`      | Input types (from `z.infer`) and output types       |
+| `validators.ts` | Zod schemas for public services                     |
+| `errors.ts`     | Module-specific error enums                         |
 
 ### Public Services (with Zod Validators)
 
@@ -325,7 +333,9 @@ export const getTaskInput = z.object({
 ```typescript
 // convex/modules/task/services/queries/types.ts
 import { z } from "zod"
+
 import { Doc } from "@acme/backend/_generated/dataModel"
+
 import * as TaskValidators from "./validators"
 
 // Input types INFERRED from Zod validators
@@ -367,41 +377,48 @@ export const taskQueryError = {
 
 ```typescript
 // convex/modules/task/services/queries/index.ts
-import { Result, fromPromise, err } from "neverthrow"
-import { QueryCtx } from "@acme/backend/_generated/server"
+import { err, fromPromise, Result } from "neverthrow"
+
 import { Id } from "@acme/backend/_generated/dataModel"
+import { QueryCtx } from "@acme/backend/_generated/server"
 import { DatabaseError, dbError } from "@acme/backend/lib/errors"
-import { ListTasksInput, ListTasksOutput, GetTaskInput, GetTaskOutput } from "./types"
+
 import { TaskQueryError } from "./errors"
+import {
+  GetTaskInput,
+  GetTaskOutput,
+  ListTasksInput,
+  ListTasksOutput,
+} from "./types"
 
 export async function list(
   ctx: QueryCtx,
-  args: ListTasksInput
+  args: ListTasksInput,
 ): Promise<Result<ListTasksOutput, DatabaseError | TaskQueryError>> {
   let query = ctx.db.query("tasks")
-  
+
   if (args.completed !== undefined) {
     query = query.filter((q) => q.eq(q.field("completed"), args.completed))
   }
-  
+
   return await fromPromise(
     query.order("desc").take(args.limit ?? 50),
-    dbError.queryFailed
+    dbError.queryFailed,
   )
 }
 
 export async function get(
   ctx: QueryCtx,
-  args: GetTaskInput
+  args: GetTaskInput,
 ): Promise<Result<GetTaskOutput, DatabaseError>> {
   const result = await fromPromise(
     ctx.db.get(args.id as Id<"tasks">),
-    dbError.queryFailed
+    dbError.queryFailed,
   )
-  
+
   if (result.isErr()) return result
   if (!result.value) return err(dbError.notFound(args.id))
-  
+
   return result
 }
 ```
@@ -435,7 +452,9 @@ export const toggleTaskInput = z.object({
 ```typescript
 // convex/modules/task/services/mutations/types.ts
 import { z } from "zod"
+
 import { Id } from "@acme/backend/_generated/dataModel"
+
 import * as TaskValidators from "./validators"
 
 export type CreateTaskInput = z.infer<typeof TaskValidators.createTaskInput>
@@ -483,23 +502,25 @@ export const taskMutationError = {
 
 ```typescript
 // convex/modules/task/services/mutations/index.ts
-import { Result, fromPromise, err, ok } from "neverthrow"
-import { MutationCtx } from "@acme/backend/_generated/server"
+import { err, fromPromise, ok, Result } from "neverthrow"
+
 import { Id } from "@acme/backend/_generated/dataModel"
+import { MutationCtx } from "@acme/backend/_generated/server"
 import { DatabaseError, dbError } from "@acme/backend/lib/errors"
+
+import { TaskMutationError, taskMutationError } from "./errors"
 import {
   CreateTaskInput,
   CreateTaskOutput,
-  UpdateTaskInput,
-  UpdateTaskOutput,
   ToggleTaskInput,
   ToggleTaskOutput,
+  UpdateTaskInput,
+  UpdateTaskOutput,
 } from "./types"
-import { TaskMutationError, taskMutationError } from "./errors"
 
 export async function create(
   ctx: MutationCtx,
-  args: CreateTaskInput
+  args: CreateTaskInput,
 ): Promise<Result<CreateTaskOutput, DatabaseError | TaskMutationError>> {
   if (args.text.length > 500) {
     return err(taskMutationError.textTooLong(args.text.length))
@@ -512,42 +533,42 @@ export async function create(
       completed: false,
       createdAt: Date.now(),
     }),
-    dbError.insertFailed
+    dbError.insertFailed,
   )
 }
 
 export async function update(
   ctx: MutationCtx,
-  args: UpdateTaskInput
+  args: UpdateTaskInput,
 ): Promise<Result<UpdateTaskOutput, DatabaseError>> {
   const task = await ctx.db.get(args.id as Id<"tasks">)
-  
+
   if (!task) {
     return err(dbError.notFound(args.id))
   }
-  
+
   return await fromPromise(
     ctx.db.patch(args.id as Id<"tasks">, {
       text: args.text,
       priority: args.priority,
     }),
-    dbError.updateFailed
+    dbError.updateFailed,
   )
 }
 
 export async function toggle(
   ctx: MutationCtx,
-  args: ToggleTaskInput
+  args: ToggleTaskInput,
 ): Promise<Result<ToggleTaskOutput, DatabaseError>> {
   const task = await ctx.db.get(args.id as Id<"tasks">)
-  
+
   if (!task) {
     return err(dbError.notFound(args.id))
   }
-  
+
   return await fromPromise(
     ctx.db.patch(args.id as Id<"tasks">, { completed: !task.completed }),
-    dbError.updateFailed
+    dbError.updateFailed,
   )
 }
 ```
@@ -607,42 +628,49 @@ export const taskInternalMutationError = {
 
 ```typescript
 // convex/modules/task/services/internal_mutations/index.ts
-import { Result, fromPromise, ok } from "neverthrow"
-import { MutationCtx } from "@acme/backend/_generated/server"
+import { fromPromise, ok, Result } from "neverthrow"
+
 import { Id } from "@acme/backend/_generated/dataModel"
+import { MutationCtx } from "@acme/backend/_generated/server"
 import { DatabaseError, dbError } from "@acme/backend/lib/errors"
-import { CleanupTasksInput, CleanupTasksOutput, BulkCreateTasksInput, BulkCreateTasksOutput } from "./types"
+
 import { TaskInternalMutationError } from "./errors"
+import {
+  BulkCreateTasksInput,
+  BulkCreateTasksOutput,
+  CleanupTasksInput,
+  CleanupTasksOutput,
+} from "./types"
 
 export async function cleanup(
   ctx: MutationCtx,
-  args: CleanupTasksInput
+  args: CleanupTasksInput,
 ): Promise<Result<CleanupTasksOutput, DatabaseError>> {
   const cutoff = Date.now() - args.olderThanDays * 24 * 60 * 60 * 1000
-  
+
   const staleResult = await fromPromise(
     ctx.db
       .query("tasks")
       .filter((q) => q.lt(q.field("createdAt"), cutoff))
       .collect(),
-    dbError.queryFailed
+    dbError.queryFailed,
   )
-  
+
   if (staleResult.isErr()) return staleResult
-  
+
   for (const task of staleResult.value) {
     await ctx.db.delete(task._id)
   }
-  
+
   return ok(staleResult.value.length)
 }
 
 export async function bulkCreate(
   ctx: MutationCtx,
-  args: BulkCreateTasksInput
+  args: BulkCreateTasksInput,
 ): Promise<Result<BulkCreateTasksOutput, DatabaseError>> {
   const ids: Id<"tasks">[] = []
-  
+
   for (const task of args.tasks) {
     const result = await fromPromise(
       ctx.db.insert("tasks", {
@@ -650,13 +678,13 @@ export async function bulkCreate(
         completed: false,
         createdAt: Date.now(),
       }),
-      dbError.insertFailed
+      dbError.insertFailed,
     )
-    
+
     if (result.isErr()) return result
     ids.push(result.value)
   }
-  
+
   return ok(ids)
 }
 ```
@@ -669,17 +697,18 @@ Handlers import services, unwrap Result types, log errors, and throw when necess
 
 ```typescript
 // convex/modules/task/queries.ts
-import { query } from "@acme/backend/lib/middleware"
 import { DatabaseErrorCode, isError } from "@acme/backend/lib/errors"
 import { logger } from "@acme/backend/lib/logger"
-import * as TaskValidators from "./services/queries/validators"
+import { query } from "@acme/backend/lib/middleware"
+
 import * as TaskQueries from "./services/queries"
+import * as TaskValidators from "./services/queries/validators"
 
 export const list = query({
   args: TaskValidators.listTasksInput,
   handler: async (ctx, args) => {
     const result = await TaskQueries.list(ctx, args)
-    
+
     if (result.isErr()) {
       logger.error("Failed to list tasks", {
         code: result.error.code,
@@ -689,7 +718,7 @@ export const list = query({
       })
       throw new Error("Failed to list tasks")
     }
-    
+
     return result.value
   },
 })
@@ -698,12 +727,12 @@ export const get = query({
   args: TaskValidators.getTaskInput,
   handler: async (ctx, args) => {
     const result = await TaskQueries.get(ctx, args)
-    
+
     if (result.isErr()) {
       if (isError(result.error, DatabaseErrorCode.NOT_FOUND)) {
         return null
       }
-      
+
       if (isError(result.error, DatabaseErrorCode.QUERY_FAILED)) {
         logger.error("Failed to get task", {
           code: result.error.code,
@@ -714,7 +743,7 @@ export const get = query({
         throw new Error("Failed to get task")
       }
     }
-    
+
     return result.value
   },
 })
@@ -724,18 +753,19 @@ export const get = query({
 
 ```typescript
 // convex/modules/task/mutations.ts
-import { mutation } from "@acme/backend/lib/middleware"
 import { DatabaseErrorCode, isError } from "@acme/backend/lib/errors"
 import { logger } from "@acme/backend/lib/logger"
-import * as TaskValidators from "./services/mutations/validators"
+import { mutation } from "@acme/backend/lib/middleware"
+
 import * as TaskMutations from "./services/mutations"
 import { TaskMutationErrorCode } from "./services/mutations/errors"
+import * as TaskValidators from "./services/mutations/validators"
 
 export const create = mutation({
   args: TaskValidators.createTaskInput,
   handler: async (ctx, args) => {
     const result = await TaskMutations.create(ctx, args)
-    
+
     if (result.isErr()) {
       if (isError(result.error, DatabaseErrorCode.INSERT_FAILED)) {
         logger.error("Failed to create task", {
@@ -746,12 +776,12 @@ export const create = mutation({
         })
         throw new Error("Failed to create task")
       }
-      
+
       if (isError(result.error, TaskMutationErrorCode.TEXT_TOO_LONG)) {
         throw new Error(result.error.message)
       }
     }
-    
+
     logger.info("Task created", { taskId: result.value })
     return result.value
   },
@@ -761,12 +791,12 @@ export const update = mutation({
   args: TaskValidators.updateTaskInput,
   handler: async (ctx, args) => {
     const result = await TaskMutations.update(ctx, args)
-    
+
     if (result.isErr()) {
       if (isError(result.error, DatabaseErrorCode.NOT_FOUND)) {
         throw new Error(result.error.message)
       }
-      
+
       if (isError(result.error, DatabaseErrorCode.UPDATE_FAILED)) {
         logger.error("Failed to update task", {
           code: result.error.code,
@@ -777,7 +807,7 @@ export const update = mutation({
         throw new Error("Failed to update task")
       }
     }
-    
+
     logger.info("Task updated", { taskId: args.id })
   },
 })
@@ -786,12 +816,12 @@ export const toggle = mutation({
   args: TaskValidators.toggleTaskInput,
   handler: async (ctx, args) => {
     const result = await TaskMutations.toggle(ctx, args)
-    
+
     if (result.isErr()) {
       if (isError(result.error, DatabaseErrorCode.NOT_FOUND)) {
         throw new Error(result.error.message)
       }
-      
+
       if (isError(result.error, DatabaseErrorCode.UPDATE_FAILED)) {
         logger.error("Failed to toggle task", {
           code: result.error.code,
@@ -802,7 +832,7 @@ export const toggle = mutation({
         throw new Error("Failed to toggle task")
       }
     }
-    
+
     logger.info("Task toggled", { taskId: args.id })
   },
 })
@@ -815,8 +845,10 @@ Internal handlers use Convex validators inline:
 ```typescript
 // convex/modules/task/internal_mutations.ts
 import { v } from "convex/values"
+
 import { internalMutation } from "@acme/backend/_generated/server"
 import { logger } from "@acme/backend/lib/logger"
+
 import * as TaskInternalMutations from "./services/internal_mutations"
 
 export const cleanup = internalMutation({
@@ -824,7 +856,7 @@ export const cleanup = internalMutation({
   returns: v.number(),
   handler: async (ctx, args) => {
     const result = await TaskInternalMutations.cleanup(ctx, args)
-    
+
     if (result.isErr()) {
       logger.error("Failed to cleanup tasks", {
         code: result.error.code,
@@ -834,7 +866,7 @@ export const cleanup = internalMutation({
       })
       throw new Error("Failed to cleanup tasks")
     }
-    
+
     logger.info("Tasks cleaned up", { count: result.value })
     return result.value
   },
@@ -845,7 +877,7 @@ export const bulkCreate = internalMutation({
   returns: v.array(v.id("tasks")),
   handler: async (ctx, args) => {
     const result = await TaskInternalMutations.bulkCreate(ctx, args)
-    
+
     if (result.isErr()) {
       logger.error("Failed to bulk create tasks", {
         code: result.error.code,
@@ -855,7 +887,7 @@ export const bulkCreate = internalMutation({
       })
       throw new Error("Failed to bulk create tasks")
     }
-    
+
     logger.info("Tasks bulk created", { count: result.value.length })
     return result.value
   },
@@ -872,21 +904,27 @@ export * from "./services/queries/validators"
 export type { ListTasksInput, GetTaskInput } from "./services/queries/types"
 
 export * from "./services/mutations/validators"
-export type { CreateTaskInput, UpdateTaskInput, ToggleTaskInput } from "./services/mutations/types"
+export type {
+  CreateTaskInput,
+  UpdateTaskInput,
+  ToggleTaskInput,
+} from "./services/mutations/types"
 ```
 
 **Frontend usage:**
 
 ```tsx
-import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "convex/react"
+import { useForm } from "react-hook-form"
+
+import type { CreateTaskInput } from "@acme/backend/modules/task/validators"
 import { api } from "@acme/backend/_generated/api"
-import { createTaskInput, type CreateTaskInput } from "@acme/backend/modules/task/validators"
+import { createTaskInput } from "@acme/backend/modules/task/validators"
 
 export function TaskForm() {
   const createTask = useMutation(api.modules.task.mutations.create)
-  
+
   const form = useForm<CreateTaskInput>({
     resolver: zodResolver(createTaskInput),
   })
@@ -904,6 +942,7 @@ Define scheduled jobs in `crons.ts`, always using internal functions:
 ```typescript
 // convex/crons.ts
 import { cronJobs } from "convex/server"
+
 import { internal } from "@acme/backend/_generated/api"
 
 const crons = cronJobs()
@@ -912,7 +951,7 @@ crons.daily(
   "cleanup old tasks",
   { hourUTC: 3, minuteUTC: 0 },
   internal.modules.task.internal_mutations.cleanup,
-  { olderThanDays: 30 }
+  { olderThanDays: 30 },
 )
 
 export default crons
@@ -922,31 +961,31 @@ export default crons
 
 File structure maps directly to API paths:
 
-| File | Export | API Path |
-|------|--------|----------|
-| `modules/task/queries.ts` | `list` | `api.modules.task.queries.list` |
-| `modules/task/mutations.ts` | `create` | `api.modules.task.mutations.create` |
+| File                                 | Export    | API Path                                           |
+| ------------------------------------ | --------- | -------------------------------------------------- |
+| `modules/task/queries.ts`            | `list`    | `api.modules.task.queries.list`                    |
+| `modules/task/mutations.ts`          | `create`  | `api.modules.task.mutations.create`                |
 | `modules/task/internal_mutations.ts` | `cleanup` | `internal.modules.task.internal_mutations.cleanup` |
 
 ## Summary Tables
 
 ### Public vs Internal Functions
 
-| Aspect | Public | Internal |
-|--------|--------|----------|
+| Aspect              | Public                         | Internal                          |
+| ------------------- | ------------------------------ | --------------------------------- |
 | Import handler from | `@acme/backend/lib/middleware` | `@acme/backend/_generated/server` |
-| Validators | Zod schemas in `validators.ts` | Convex `v.*` inline |
-| Input types | `z.infer<typeof validator>` | Defined directly in `types.ts` |
-| Frontend sharing | Yes, via `validators.ts` | No |
+| Validators          | Zod schemas in `validators.ts` | Convex `v.*` inline               |
+| Input types         | `z.infer<typeof validator>`    | Defined directly in `types.ts`    |
+| Frontend sharing    | Yes, via `validators.ts`       | No                                |
 
 ### Service File Structure
 
-| File | Public Services | Internal Services |
-|------|-----------------|-------------------|
-| `index.ts` | Service functions | Service functions |
-| `types.ts` | Input (z.infer) + Output | Input + Output (direct) |
-| `validators.ts` | Zod schemas | ❌ Not needed |
-| `errors.ts` | Error enum + type + factory | Error enum + type + factory |
+| File            | Public Services             | Internal Services           |
+| --------------- | --------------------------- | --------------------------- |
+| `index.ts`      | Service functions           | Service functions           |
+| `types.ts`      | Input (z.infer) + Output    | Input + Output (direct)     |
+| `validators.ts` | Zod schemas                 | ❌ Not needed               |
+| `errors.ts`     | Error enum + type + factory | Error enum + type + factory |
 
 ### Scaling Services
 
