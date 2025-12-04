@@ -13,6 +13,7 @@
       "dependencies": {
         "@expo/vector-icons": "^15.0.3",
         "@react-navigation/native": "^7.1.8",
+        "@t3-oss/env-core": "catalog:",
         "expo": "~54.0.25",
         "expo-constants": "~18.0.10",
         "expo-font": "~14.0.9",
