@@ -1,6 +1,6 @@
 import { v } from "convex/values"
 
-import { mutation } from "../../_generated/server"
+import { mutation } from "@acme/backend/_generated/server"
 
 export const create = mutation({
   args: { text: v.string() },

@@ -3,9 +3,18 @@
   "main": "expo-router/entry",
   "private": true,
   "scripts": {
+    "build": "eas build --platform ios --profile preview --local --non-interactive --output ./dist/.app-ios-preview.ipa",
     "dev": "expo start",
-    "dev:android": "expo start --android",
-    "dev:ios": "expo start --ios"
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "test": "echo 'NO TEST SUITE CONFIGURED'",
+    "format": "prettier . --check --cache --cache-location .cache/.prettiercache --ignore-path ../../.prettierignore",
+    "format:fix": "prettier . --write --cache --cache-location .cache/.prettiercache --ignore-path ../../.prettierignore",
+    "lint": "eslint .  --cache --cache-location .cache/.eslintcache",
+    "lint:fix": "eslint . --fix  --cache --cache-location .cache/.eslintcache",
+    "clean": "git clean -xdf dist node_modules .turbo/cache .cache .expo android ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "prebuild": "expo prebuild --clean --platform ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

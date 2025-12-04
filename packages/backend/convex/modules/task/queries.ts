@@ -1,4 +1,4 @@
-import { query } from "../../_generated/server"
+import { query } from "@acme/backend/_generated/server"
 
 export const list = query({
   handler: async (ctx) => {
