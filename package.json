@@ -33,7 +33,8 @@
       },
       "tailwind": {
         "@tailwindcss/vite": "^4.0.6",
-        "tailwindcss": "^4.0.6"
+        "tailwindcss": "^4.0.6",
+        "uniwind": "^1.1.0"
       },
       "prettier": {
         "prettier": "^3.7.4",
@@ -75,6 +76,6 @@
     "pr": "bun run ck:fix && bun run ck"
   },
   "devDependencies": {
-    "turbo": "^2.6.2"
+    "turbo": "^2.6.3"
   }
 }
