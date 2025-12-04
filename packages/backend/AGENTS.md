@@ -8,6 +8,7 @@
 - **Naming**: camelCase for variables/functions, PascalCase for classes/namespaces
 - **Error handling**: Use Result patterns, avoid throwing exceptions in tools
 - **File structure**: Namespace-based organization (e.g., `Tool.define()`, `Session.create()`)
+- **New features**: Read and understand `ARCHITECTURE.md` before implementing new modules or features
 
 ## Available Commands
 
