@@ -1,6 +1,6 @@
 import baseConfig from "@acme/eslint-config/base"
 import reactConfig from "@acme/eslint-config/react"
-import nativeConfig from "@acme/eslint-config/native"
+import expoConfig from "@acme/eslint-config/expo"
 
 /** @type {import('@typescript-eslint/utils').TSESLint.FlatConfig.ConfigFile} */
 export default [
@@ -16,5 +16,5 @@ export default [
   },
   ...baseConfig,
   ...reactConfig,
-  ...nativeConfig,
+  ...expoConfig,
 ]

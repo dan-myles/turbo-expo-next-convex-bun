@@ -8,7 +8,8 @@
     "./base": "./base.js",
     "./react": "./react.js",
     "./tanstack": "./tanstack.js",
-    "./native": "./native.js"
+    "./expo": "./expo.js",
+    "./convex": "./convex.js"
   },
   "scripts": {
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
@@ -21,6 +22,7 @@
     "@acme/tsconfig": "workspace:*",
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
     "@prettier/plugin-oxc": "catalog:prettier",
+    "@convex-dev/eslint-plugin": "catalog:eslint",
     "@tanstack/eslint-config": "catalog:eslint",
     "@types/node": "catalog:",
     "@eslint/compat": "catalog:eslint",
