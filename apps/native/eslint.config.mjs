@@ -1,7 +1,6 @@
-import eslintPluginExpo from "eslint-plugin-expo"
-
 import baseConfig from "@acme/eslint-config/base"
 import reactConfig from "@acme/eslint-config/react"
+import nativeConfig from "@acme/eslint-config/native"
 
 /** @type {import('@typescript-eslint/utils').TSESLint.FlatConfig.ConfigFile} */
 export default [
@@ -17,14 +16,5 @@ export default [
   },
   ...baseConfig,
   ...reactConfig,
-  {
-    plugins: {
-      expo: eslintPluginExpo,
-    },
-    rules: {
-      "expo/use-dom-exports": ["error"],
-      "expo/no-env-var-destructuring": ["error"],
-      "expo/no-dynamic-env-var": ["error"],
-    },
-  },
+  ...nativeConfig,
 ]
