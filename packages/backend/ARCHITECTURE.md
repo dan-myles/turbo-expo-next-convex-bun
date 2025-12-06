@@ -67,6 +67,7 @@ The root schema imports and combines all tables:
 ```typescript
 // packages/backend/src/schema.ts
 import { defineSchema } from "convex/server"
+
 import { Tasks } from "./tables/tasks"
 
 export default defineSchema({
@@ -132,6 +133,7 @@ export const list = query({
 ```typescript
 // packages/backend/src/modules/task/mutations.ts
 import { v } from "convex/values"
+
 import { mutation } from "@acme/backend/_generated/server"
 
 export const create = mutation({
@@ -255,19 +257,20 @@ export const env = createEnv({
 
 File structure maps directly to API paths:
 
-| File                          | Export   | API Path                       |
-| ----------------------------- | -------- | ------------------------------ |
-| `modules/task/queries.ts`     | `list`   | `api.modules.task.queries.list` |
-| `modules/task/mutations.ts`   | `create` | `api.modules.task.mutations.create` |
-| `modules/task/mutations.ts`   | `toggle` | `api.modules.task.mutations.toggle` |
-| `modules/task/mutations.ts`   | `remove` | `api.modules.task.mutations.remove` |
+| File                        | Export   | API Path                            |
+| --------------------------- | -------- | ----------------------------------- |
+| `modules/task/queries.ts`   | `list`   | `api.modules.task.queries.list`     |
+| `modules/task/mutations.ts` | `create` | `api.modules.task.mutations.create` |
+| `modules/task/mutations.ts` | `toggle` | `api.modules.task.mutations.toggle` |
+| `modules/task/mutations.ts` | `remove` | `api.modules.task.mutations.remove` |
 
 ## Frontend Usage
 
 Import and use the generated API:
 
 ```typescript
-import { useQuery, useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
+
 import { api } from "@acme/backend/_generated/api"
 
 export function TaskList() {
@@ -284,9 +287,7 @@ export function TaskList() {
           <button onClick={() => toggleTask({ id: task._id })}>
             {task.completed ? "Undo" : "Complete"}
           </button>
-          <button onClick={() => removeTask({ id: task._id })}>
-            Delete
-          </button>
+          <button onClick={() => removeTask({ id: task._id })}>Delete</button>
         </div>
       ))}
     </div>
@@ -297,6 +298,7 @@ export function TaskList() {
 ## Adding a New Module
 
 1. **Create the table definition** in `/tables/[name].ts`:
+
    ```typescript
    import { z } from "zod"
    import { zodTable } from "zodvex"
@@ -309,6 +311,7 @@ export function TaskList() {
    ```
 
 2. **Add table to schema.ts**:
+
    ```typescript
    import { Users } from "./tables/users"
    
@@ -336,6 +339,7 @@ For richer validation and frontend sharing, use Zod validators via middleware:
 ```typescript
 // packages/backend/src/modules/task/mutations.ts
 import { z } from "zod"
+
 import { mutation } from "@acme/backend/lib/middleware"
 
 const createTaskInput = z.object({
@@ -377,6 +381,7 @@ Frontend usage with react-hook-form:
 ```typescript
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+
 import type { CreateTaskInput } from "@acme/backend/modules/task/validators"
 import { createTaskInput } from "@acme/backend/modules/task/validators"
 
@@ -392,6 +397,7 @@ For complex business logic, create a services layer that returns `Result<T, E>` 
 ```typescript
 // packages/backend/src/modules/task/services/mutations.ts
 import { err, fromPromise, ok, Result } from "neverthrow"
+
 import type { MutationCtx } from "@acme/backend/_generated/server"
 import { DatabaseError, dbError } from "@acme/backend/lib/errors"
 
@@ -419,8 +425,10 @@ Handler unwraps the Result:
 ```typescript
 // packages/backend/src/modules/task/mutations.ts
 import { v } from "convex/values"
+
 import { mutation } from "@acme/backend/_generated/server"
 import { logger } from "@acme/backend/lib/logger"
+
 import * as TaskServices from "./services/mutations"
 
 export const create = mutation({
@@ -446,6 +454,7 @@ For cron jobs or internal operations, create internal functions:
 ```typescript
 // packages/backend/src/modules/task/internal_mutations.ts
 import { v } from "convex/values"
+
 import { internalMutation } from "@acme/backend/_generated/server"
 
 export const cleanup = internalMutation({
@@ -474,6 +483,7 @@ For protected routes, extend the context with user data:
 // packages/backend/src/lib/middleware.ts
 import type { ExtractCtx } from "zodvex"
 import { customCtx, zCustomMutationBuilder, zCustomQueryBuilder } from "zodvex"
+
 import type { Doc } from "@acme/backend/_generated/dataModel"
 import type { MutationCtx, QueryCtx } from "@acme/backend/_generated/server"
 import {
@@ -521,6 +531,7 @@ Usage:
 
 ```typescript
 import { z } from "zod"
+
 import { authMutation } from "@acme/backend/lib/middleware"
 
 export const createPost = authMutation({
@@ -539,6 +550,7 @@ export const createPost = authMutation({
 ## Summary
 
 The current architecture is intentionally simple and direct:
+
 - Tables defined with Zod schemas via `zodvex`
 - Handlers using Convex's built-in validators
 - Shared utilities for errors, logging, and environment variables
