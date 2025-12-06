@@ -41,7 +41,6 @@
     "zodvex": "catalog:convex"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
     "@acme/eslint-config": "workspace:*",
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
@@ -50,6 +49,7 @@
     "@eslint/eslintrc": "catalog:eslint",
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
     "@prettier/plugin-oxc": "catalog:prettier",
+    "@types/node": "catalog:",
     "eslint": "catalog:eslint",
     "eslint-plugin-unused-imports": "catalog:eslint",
     "prettier": "catalog:prettier",
