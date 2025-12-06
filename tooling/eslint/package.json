@@ -6,8 +6,8 @@
   "prettier": "@acme/prettier-config",
   "exports": {
     "./base": "./base.js",
-    "./nextjs": "./nextjs.js",
-    "./react": "./react.js"
+    "./react": "./react.js",
+    "./tanstack": "./tanstack.js"
   },
   "scripts": {
     "typecheck": "tsc --noEmit --emitDeclarationOnly false",
@@ -18,20 +18,24 @@
   "devDependencies": {
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
-    "@eslint/compat": "catalog:eslint",
-    "@eslint/eslintrc": "catalog:eslint",
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
     "@prettier/plugin-oxc": "catalog:prettier",
+    "@tanstack/eslint-config": "catalog:eslint",
     "@types/node": "catalog:",
+    "@eslint/compat": "catalog:eslint",
+    "@eslint/eslintrc": "catalog:eslint",
     "eslint": "catalog:eslint",
     "eslint-plugin-react": "catalog:eslint",
     "eslint-plugin-react-hooks": "catalog:eslint",
+    "eslint-plugin-expo": "catalog:eslint",
+    "eslint-config-expo": "catalog:eslint",
+    "typescript-eslint": "catalog:eslint",
+    "eslint-plugin-unused-imports": "catalog:eslint",
     "prettier": "catalog:prettier",
     "prettier-plugin-classnames": "catalog:prettier",
     "prettier-plugin-ember-template-tag": "catalog:prettier",
     "prettier-plugin-merge": "catalog:prettier",
     "prettier-plugin-tailwindcss": "catalog:prettier",
-    "typescript": "catalog:",
-    "typescript-eslint": "catalog:eslint"
+    "typescript": "catalog:"
   }
 }

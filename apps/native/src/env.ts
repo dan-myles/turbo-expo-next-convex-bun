@@ -20,8 +20,8 @@
  *   OPTIONAL_VAR: z.string().optional(),
  * }
  */
-import { createEnv } from "@t3-oss/env-core";
-import { z } from "zod";
+import { createEnv } from "@t3-oss/env-core"
+import { z } from "zod"
 
 export const env = createEnv({
   clientPrefix: "EXPO_",
@@ -32,4 +32,4 @@ export const env = createEnv({
   client: {
     EXPO_PUBLIC_CONVEX_URL: z.string(),
   },
-});
+})

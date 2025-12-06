@@ -1,20 +1,22 @@
-import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import "react-native-reanimated";
-import "#native/styles/globals.css";
-import { ConvexProvider } from "#native/components/providers/convex.provider";
+import { useEffect } from "react"
+import { Stack } from "expo-router"
+import * as SplashScreen from "expo-splash-screen"
 
-export { ErrorBoundary } from "expo-router";
+import "react-native-reanimated"
+import "#native/styles/globals.css"
 
-SplashScreen.preventAutoHideAsync();
+import { ConvexProvider } from "#native/components/providers/convex.provider"
+
+export { ErrorBoundary } from "expo-router"
+
+SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   useEffect(() => {
-    SplashScreen.hideAsync();
-  }, []);
+    SplashScreen.hideAsync()
+  }, [])
 
-  return <RootLayoutNav />;
+  return <RootLayoutNav />
 }
 
 function RootLayoutNav() {
@@ -24,5 +26,5 @@ function RootLayoutNav() {
         <Stack.Screen name="home" />
       </Stack>
     </ConvexProvider>
-  );
+  )
 }

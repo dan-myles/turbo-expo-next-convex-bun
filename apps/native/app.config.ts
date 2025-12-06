@@ -1,4 +1,4 @@
-import { ExpoConfig } from "expo/config";
+import { ExpoConfig } from "expo/config"
 
 export default (): ExpoConfig => ({
   name: "Acme Native",
@@ -38,4 +38,4 @@ export default (): ExpoConfig => ({
     policy: "fingerprint",
   },
   plugins: ["expo-router"],
-});
+})

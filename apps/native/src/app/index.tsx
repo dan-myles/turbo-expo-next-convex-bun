@@ -1,5 +1,5 @@
-import { Text } from "react-native";
+import { Text } from "react-native"
 
 export default function Home() {
-  return <Text className="bg-red-200">hi</Text>;
+  return <Text className="bg-red-200">hi</Text>
 }

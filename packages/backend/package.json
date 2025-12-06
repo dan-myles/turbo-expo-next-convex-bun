@@ -1,7 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@acme/backend",
-  "version": "0.1.0",
   "private": true,
   "type": "module",
   "prettier": "@acme/prettier-config",

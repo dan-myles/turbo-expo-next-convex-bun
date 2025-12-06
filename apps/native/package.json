@@ -1,7 +1,9 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "@acme/native",
   "main": "expo-router/entry",
   "private": true,
+  "prettier": "@acme/prettier-config",
   "imports": {
     "#native/*": "./src/*",
     "#native/assets/*": "./assets/*",
@@ -26,6 +28,7 @@
     "@expo/vector-icons": "^15.0.3",
     "@t3-oss/env-core": "catalog:",
     "@react-navigation/native": "^7.1.8",
+    "convex": "catalog:convex",
     "expo": "~54.0.26",
     "zod": "catalog:",
     "uniwind": "catalog:tailwind",
@@ -50,6 +53,23 @@
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@types/react": "catalog:react19",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "@eslint/compat": "catalog:eslint",
+    "@eslint/eslintrc": "catalog:eslint",
+    "@tanstack/eslint-config": "catalog:eslint",
+    "eslint": "catalog:eslint",
+    "eslint-plugin-react": "catalog:eslint",
+    "eslint-plugin-react-hooks": "catalog:eslint",
+    "eslint-plugin-expo": "catalog:eslint",
+    "eslint-config-expo": "catalog:eslint",
+    "typescript-eslint": "catalog:eslint",
+    "eslint-plugin-unused-imports": "catalog:eslint",
+    "prettier": "catalog:prettier",
+    "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
+    "@prettier/plugin-oxc": "catalog:prettier",
+    "prettier-plugin-classnames": "catalog:prettier",
+    "prettier-plugin-ember-template-tag": "catalog:prettier",
+    "prettier-plugin-merge": "catalog:prettier",
+    "prettier-plugin-tailwindcss": "catalog:prettier"
   }
 }
