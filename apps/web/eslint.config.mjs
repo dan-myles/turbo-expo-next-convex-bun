@@ -5,15 +5,9 @@ import tanstackConfig from "@acme/eslint-config/tanstack"
 /** @type {import('@typescript-eslint/utils').TSESLint.FlatConfig.ConfigFile} */
 export default [
   {
-    ignores: [".dist/**", "eslint.config.js"],
+    ignores: ["dist/**"],
   },
   ...baseConfig,
   ...tanstackConfig,
   ...reactConfig,
-  {
-    rules: {
-      "sort-imports": "off",
-      "import/order": "off",
-    },
-  },
 ]

@@ -7,7 +7,7 @@ export default [
   includeIgnoreFile(path.join(import.meta.dirname, "../../.gitignore")),
   ...tseslint.configs.recommended,
   {
-    ignores: [".cache/**", "vendor/**"],
+    ignores: [".cache/**", "vendor/**", "eslint.config.mjs"],
   },
   {
     plugins: {
