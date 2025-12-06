@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "extends": "@gamestock/tsconfig/base.json",
+  "extends": "@acme/tsconfig/base.json",
   "compilerOptions": {
     "allowJs": true,
     "esModuleInterop": true,
@@ -15,7 +15,6 @@
     "skipLibCheck": true,
     "target": "ESNext",
     "strict": true,
-    "types": ["node"],
     "paths": {
       "@/*": ["./src/*"],
       "@/assets/*": ["./assets/*"],
