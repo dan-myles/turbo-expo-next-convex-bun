@@ -1,0 +1,45 @@
+{
+  "name": "@acme/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 3000",
+    "build": "vite build",
+    "serve": "vite preview",
+    "test": "vitest run",
+    "lint": "eslint",
+    "format": "prettier",
+    "check": "prettier --write . && eslint --fix"
+  },
+  "dependencies": {
+    "@t3-oss/env-core": "catalog:",
+    "@tailwindcss/vite": "catalog:tailwind",
+    "@tanstack/react-devtools": "catalog:tanstack",
+    "@tanstack/react-query": "catalog:tanstack",
+    "@tanstack/react-query-devtools": "catalog:tanstack",
+    "@tanstack/react-router": "catalog:tanstack",
+    "@tanstack/react-router-devtools": "catalog:tanstack",
+    "@tanstack/react-router-ssr-query": "catalog:tanstack",
+    "@tanstack/react-start": "catalog:tanstack",
+    "@tanstack/router-plugin": "catalog:tanstack",
+    "nitro": "catalog:tanstack",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19",
+    "tailwindcss": "catalog:tailwind",
+    "vite-tsconfig-paths": "catalog:vite"
+  },
+  "devDependencies": {
+    "@tanstack/devtools-vite": "catalog:tanstack",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "@vitejs/plugin-react": "catalog:vite",
+    "babel-plugin-react-compiler": "catalog:react19",
+    "jsdom": "catalog:",
+    "prettier": "catalog:prettier",
+    "typescript": "catalog:",
+    "vite": "catalog:vite",
+    "vitest": "catalog:vite",
+    "web-vitals": "catalog:"
+  }
+}
