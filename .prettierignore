@@ -14,6 +14,7 @@
 .output/
 dist/
 tsconfig.json
+convex.json
 
 _generated/
 android/
