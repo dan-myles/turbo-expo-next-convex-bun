@@ -18,8 +18,7 @@
     },
     "./_generated/dataModel": {
       "types": "./src/_generated/dataModel.d.ts"
-    },
-    "./*": "./src/*.ts"
+    }
   },
   "scripts": {
     "build": "tsc",

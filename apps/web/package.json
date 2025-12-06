@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "@acme/tailwind": "workspace:*",
-    "zod": "catalog:",
     "@t3-oss/env-core": "catalog:",
     "@tailwindcss/vite": "catalog:tailwind",
     "@tanstack/react-devtools": "catalog:tanstack",
@@ -35,7 +34,8 @@
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
     "tailwindcss": "catalog:tailwind",
-    "vite-tsconfig-paths": "catalog:vite"
+    "vite-tsconfig-paths": "catalog:vite",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@acme/eslint-config": "workspace:*",
