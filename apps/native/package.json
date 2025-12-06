@@ -22,6 +22,7 @@
     "@t3-oss/env-core": "catalog:",
     "@react-navigation/native": "^7.1.8",
     "expo": "~54.0.26",
+    "zod": "catalog:",
     "uniwind": "catalog:tailwind",
     "expo-constants": "~18.0.10",
     "expo-font": "~14.0.9",

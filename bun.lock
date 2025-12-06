@@ -32,6 +32,7 @@
         "react-native-web": "~0.21.0",
         "react-native-worklets": "0.5.1",
         "uniwind": "catalog:tailwind",
+        "zod": "catalog:",
       },
       "devDependencies": {
         "@acme/eslint-config": "workspace:*",
@@ -59,6 +60,7 @@
         "@eslint/eslintrc": "catalog:eslint",
         "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
         "@prettier/plugin-oxc": "catalog:prettier",
+        "@types/node": "catalog:",
         "eslint": "catalog:eslint",
         "prettier": "catalog:prettier",
         "prettier-plugin-classnames": "catalog:prettier",
