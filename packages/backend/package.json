@@ -50,6 +50,7 @@
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
     "@prettier/plugin-oxc": "catalog:prettier",
     "eslint": "catalog:eslint",
+    "eslint-plugin-unused-imports": "catalog:eslint",
     "prettier": "catalog:prettier",
     "prettier-plugin-classnames": "catalog:prettier",
     "prettier-plugin-ember-template-tag": "catalog:prettier",

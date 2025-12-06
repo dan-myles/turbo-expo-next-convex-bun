@@ -28,7 +28,6 @@
     "eslint-plugin-react": "catalog:eslint",
     "eslint-plugin-react-hooks": "catalog:eslint",
     "eslint-plugin-expo": "catalog:eslint",
-    "eslint-config-expo": "catalog:eslint",
     "typescript-eslint": "catalog:eslint",
     "eslint-plugin-unused-imports": "catalog:eslint",
     "prettier": "catalog:prettier",

@@ -89,7 +89,6 @@
         "@eslint/compat": "^2.0.0",
         "@eslint/eslintrc": "^3.3.3",
         "@tanstack/eslint-config": "^0.3.0",
-        "eslint-config-expo": "~10.0.0",
         "eslint-plugin-expo": "^1.0.0",
         "eslint-plugin-unused-imports": "^4.2.0",
         "eslint-plugin-react": "^7.37.5",
