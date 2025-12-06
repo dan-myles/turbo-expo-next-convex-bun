@@ -5,6 +5,9 @@
   "private": true,
   "type": "module",
   "prettier": "@acme/prettier-config",
+  "imports": {
+    "#backend/*": "./src/*"
+  },
   "exports": {
     "./_generated/api": {
       "types": "./src/_generated/api.d.ts",

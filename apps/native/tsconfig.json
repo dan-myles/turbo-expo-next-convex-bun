@@ -16,9 +16,9 @@
     "target": "ESNext",
     "strict": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@/assets/*": ["./assets/*"],
-      "@/vendor/*": ["./vendor/*"]
+      "#native/*": ["./src/*"],
+      "#native/assets/*": ["./assets/*"],
+      "#native/vendor/*": ["./vendor/*"]
     }
   },
   "include": [

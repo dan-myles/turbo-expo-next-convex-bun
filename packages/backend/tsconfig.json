@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "@acme/tsconfig/base.json",
   "compilerOptions": {
     /* These compiler options are required by Convex */
@@ -9,7 +10,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "paths": {
-      "@acme/backend/*": ["./convex/*"]
+      "#backend/*": ["./src/*"]
     }
   },
   "include": ["./**/*"],

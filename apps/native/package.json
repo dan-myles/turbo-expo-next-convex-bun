@@ -2,6 +2,11 @@
   "name": "@acme/native",
   "main": "expo-router/entry",
   "private": true,
+  "imports": {
+    "#native/*": "./src/*",
+    "#native/assets/*": "./assets/*",
+    "#native/vendor/*": "./vendor/*"
+  },
   "scripts": {
     "build": "eas build --platform ios --profile preview --local --non-interactive --output ./dist/.app-ios-preview.ipa",
     "dev": "expo start",
