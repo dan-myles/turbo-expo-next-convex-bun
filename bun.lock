@@ -77,6 +77,7 @@
         "react-dom": "catalog:react19",
         "tailwindcss": "catalog:tailwind",
         "vite-tsconfig-paths": "catalog:vite",
+        "zod": "catalog:",
       },
       "devDependencies": {
         "@acme/eslint-config": "workspace:*",

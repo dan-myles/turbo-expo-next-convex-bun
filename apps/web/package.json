@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@acme/tailwind": "workspace:*",
+    "zod": "catalog:",
     "@t3-oss/env-core": "catalog:",
     "@tailwindcss/vite": "catalog:tailwind",
     "@tanstack/react-devtools": "catalog:tanstack",
