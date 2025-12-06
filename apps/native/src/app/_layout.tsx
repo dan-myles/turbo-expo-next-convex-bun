@@ -3,6 +3,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import "#native/styles/globals.css";
+import { ConvexProvider } from "#native/components/providers/convex.provider";
 
 export { ErrorBoundary } from "expo-router";
 
@@ -18,8 +19,10 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <Stack>
-      <Stack.Screen name="home" />
-    </Stack>
+    <ConvexProvider>
+      <Stack>
+        <Stack.Screen name="home" />
+      </Stack>
+    </ConvexProvider>
   );
 }
