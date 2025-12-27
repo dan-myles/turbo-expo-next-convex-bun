@@ -10,7 +10,7 @@
  * // Access validated environment variables
  * import { env } from "@acme/backend/lib/env"
  *
- * const HTTP_URL = env.HTT_URL // type: "debug" | "info" | "warn" | "error"
+ * const HTTP_URL = env.HTTP_URL
  *
  * @example
  * // Adding new environment variables
