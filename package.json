@@ -73,7 +73,7 @@
       "tailwind": {
         "@tailwindcss/vite": "^4.1.18",
         "tailwindcss": "^4.1.18",
-        "uniwind": "^1.1.0"
+        "uniwind": "^1.2.2"
       },
       "prettier": {
         "prettier": "^3.7.4",
