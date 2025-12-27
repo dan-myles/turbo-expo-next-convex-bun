@@ -8,6 +8,5 @@ export default [
     ignores: ["dist/**"],
   },
   ...baseConfig,
-  ...tanstackConfig,
   ...reactConfig,
 ]
