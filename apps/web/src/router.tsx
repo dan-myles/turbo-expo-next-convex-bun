@@ -1,7 +1,5 @@
+import { notifyManager } from "@tanstack/react-query"
 import { createRouter } from "@tanstack/react-router"
-import {
-  notifyManager,
-} from "@tanstack/react-query"
 
 import { routeTree } from "./routeTree.gen"
 

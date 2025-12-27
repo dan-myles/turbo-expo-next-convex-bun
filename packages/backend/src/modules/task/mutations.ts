@@ -16,17 +16,17 @@ export const create = mutation({
 export const remove = mutation({
   args: { id: v.id("tasks") },
   handler: async (ctx, args) => {
-    await ctx.db.delete(args.id)
+    await ctx.db.delete("tasks", args.id)
   },
 })
 
 export const toggle = mutation({
   args: { id: v.id("tasks") },
   handler: async (ctx, args) => {
-    const task = await ctx.db.get(args.id)
+    const task = await ctx.db.get("tasks", args.id)
     if (!task) throw new Error("Task not found")
 
-    await ctx.db.patch(args.id, {
+    await ctx.db.patch("tasks", args.id, {
       completed: !task.completed,
     })
   },
