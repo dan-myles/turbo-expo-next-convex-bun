@@ -63,6 +63,7 @@
       "name": "@acme/web",
       "dependencies": {
         "@acme/tailwind": "workspace:*",
+        "@acme/ui": "workspace:*",
         "@convex-dev/react-query": "catalog:convex",
         "@t3-oss/env-core": "catalog:",
         "@tailwindcss/vite": "catalog:tailwind",

@@ -5,8 +5,13 @@ import {
   QueryClient,
 } from "@tanstack/react-query"
 import { createRouter } from "@tanstack/react-router"
-import { ConvexReactClient } from "convex/react"
+import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query"
+import { ConvexProvider, ConvexReactClient } from "convex/react"
 
+import { toast } from "@acme/ui/components/sonner"
+
+import { DefaultCatchBoundary } from "#web/components/default-catch-boundary"
+import { NotFound } from "#web/components/not-found"
 import { env } from "./env"
 import { routeTree } from "./routeTree.gen"
 
@@ -27,8 +32,8 @@ export const getRouter = () => {
       },
     },
     mutationCache: new MutationCache({
-      onError: (_error) => {
-        // toast(error.message, { className: "bg-red-500 text-white" })
+      onError: (error) => {
+        toast.error(error.message, { className: "bg-red-500 text-white" })
       },
     }),
   })
@@ -36,8 +41,28 @@ export const getRouter = () => {
 
   const router = createRouter({
     routeTree,
+    scrollRestoration: true,
     defaultPreload: "intent",
+    defaultErrorComponent: DefaultCatchBoundary,
+    defaultNotFoundComponent: () => <NotFound />,
+    context: { queryClient, convexClient: convex, convexQueryClient },
+    Wrap: ({ children }) => (
+      <ConvexProvider client={convexQueryClient.convexClient}>
+        {children}
+      </ConvexProvider>
+    ),
+  })
+
+  setupRouterSsrQueryIntegration({
+    router,
+    queryClient,
   })
 
   return router
+}
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: ReturnType<typeof getRouter>
+  }
 }

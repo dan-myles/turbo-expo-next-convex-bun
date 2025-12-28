@@ -22,6 +22,7 @@
     "@convex-dev/react-query": "catalog:convex",
     "convex": "catalog:convex",
     "@acme/tailwind": "workspace:*",
+    "@acme/ui": "workspace:*",
     "@t3-oss/env-core": "catalog:",
     "@tailwindcss/vite": "catalog:tailwind",
     "@tanstack/react-devtools": "catalog:tanstack",
