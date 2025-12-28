@@ -1,6 +1,7 @@
+import type { VariantProps } from "class-variance-authority"
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
+import { cva } from "class-variance-authority"
 
 import { cn } from "#ui/lib/utils"
 
@@ -22,7 +23,7 @@ const badgeVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 )
 
 function Badge({

@@ -19,10 +19,9 @@
     "clean": "git clean -xdf dist node_modules .cache .tanstack .nitro .output"
   },
   "dependencies": {
-    "@convex-dev/react-query": "catalog:convex",
-    "convex": "catalog:convex",
     "@acme/tailwind": "workspace:*",
     "@acme/ui": "workspace:*",
+    "@convex-dev/react-query": "catalog:convex",
     "@t3-oss/env-core": "catalog:",
     "@tailwindcss/vite": "catalog:tailwind",
     "@tanstack/react-devtools": "catalog:tanstack",
@@ -33,6 +32,7 @@
     "@tanstack/react-router-ssr-query": "catalog:tanstack",
     "@tanstack/react-start": "catalog:tanstack",
     "@tanstack/router-plugin": "catalog:tanstack",
+    "convex": "catalog:convex",
     "nitro": "catalog:tanstack",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",
