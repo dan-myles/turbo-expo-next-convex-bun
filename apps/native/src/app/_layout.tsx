@@ -1,6 +1,8 @@
 import { useEffect } from "react"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { Stack } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
+import { HeroUINativeProvider } from "heroui-native"
 
 import "react-native-reanimated"
 import "#native/styles/globals.css"
@@ -22,9 +24,13 @@ export default function RootLayout() {
 function RootLayoutNav() {
   return (
     <ConvexProvider>
-      <Stack>
-        <Stack.Screen name="home" />
-      </Stack>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <HeroUINativeProvider>
+          <Stack>
+            <Stack.Screen name="home" />
+          </Stack>
+        </HeroUINativeProvider>
+      </GestureHandlerRootView>
     </ConvexProvider>
   )
 }

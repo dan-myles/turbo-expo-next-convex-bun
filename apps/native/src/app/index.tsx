@@ -1,5 +1,10 @@
-import { Text } from "react-native"
+import { View } from "react-native"
+import { Button } from "heroui-native"
 
-export default function Home() {
-  return <Text className="bg-red-200">hi</Text>
+export default function MyComponent() {
+  return (
+    <View className="bg-background flex-1 items-center justify-center">
+      <Button onPress={() => console.log("Pressed!")}>Get Started</Button>
+    </View>
+  )
 }
