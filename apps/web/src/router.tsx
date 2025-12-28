@@ -46,6 +46,10 @@ export const getRouter = () => {
     defaultErrorComponent: DefaultCatchBoundary,
     defaultNotFoundComponent: () => <NotFound />,
     context: { queryClient, convexClient: convex, convexQueryClient },
+
+    // NOTE:
+    // This is the default Wrap function that is used by TanStack Router.
+    // Here we can add our proviers that we want to be available in all routes.
     Wrap: ({ children }) => (
       <ConvexProvider client={convexQueryClient.convexClient}>
         {children}
