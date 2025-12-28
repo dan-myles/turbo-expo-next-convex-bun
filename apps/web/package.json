@@ -19,6 +19,8 @@
     "clean": "git clean -xdf dist node_modules .cache .tanstack .nitro .output"
   },
   "dependencies": {
+    "@convex-dev/react-query": "catalog:convex",
+    "convex": "catalog:convex",
     "@acme/tailwind": "workspace:*",
     "@t3-oss/env-core": "catalog:",
     "@tailwindcss/vite": "catalog:tailwind",

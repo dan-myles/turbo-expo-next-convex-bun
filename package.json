@@ -61,7 +61,8 @@
       "convex": {
         "convex": "^1.31.2",
         "convex-helpers": "^0.1.106",
-        "zodvex": "^0.2.5"
+        "zodvex": "^0.2.5",
+        "@convex-dev/react-query": "^0.1.0"
       },
       "react19": {
         "react": "19.1.0",
