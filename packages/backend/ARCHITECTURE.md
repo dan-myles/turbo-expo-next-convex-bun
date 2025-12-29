@@ -302,7 +302,7 @@ export function TaskList() {
    ```typescript
    import { z } from "zod"
    import { zodTable } from "zodvex"
-   
+
    export const Users = zodTable("users", {
      name: z.string(),
      email: z.string().email(),
@@ -314,7 +314,7 @@ export function TaskList() {
 
    ```typescript
    import { Users } from "./tables/users"
-   
+
    export default defineSchema({
      tasks: Tasks.table,
      users: Users.table,
