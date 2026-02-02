@@ -15,8 +15,6 @@ import type * as http from "../http.js";
 import type * as http_http_errors from "../http/http_errors.js";
 import type * as http_router from "../http/router.js";
 import type * as lib_env from "../lib/env.js";
-import type * as lib_errors from "../lib/errors.js";
-import type * as lib_logger from "../lib/logger.js";
 import type * as lib_middleware from "../lib/middleware.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as modules_task_create from "../modules/task/create.js";
@@ -41,8 +39,6 @@ declare const fullApi: ApiFromModules<{
   "http/http_errors": typeof http_http_errors;
   "http/router": typeof http_router;
   "lib/env": typeof lib_env;
-  "lib/errors": typeof lib_errors;
-  "lib/logger": typeof lib_logger;
   "lib/middleware": typeof lib_middleware;
   "lib/validators": typeof lib_validators;
   "modules/task/create": typeof modules_task_create;

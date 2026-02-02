@@ -340,7 +340,7 @@ src/
   - App(s) that depend on Convex compile and can invoke the migrated functions successfully.
 
 
-- [ ] 12. Update `packages/backend/AGENTS.md` to match gamestock backend guidance (adapted)
+- [x] 12. Update `packages/backend/AGENTS.md` to match gamestock backend guidance (adapted)
 
   **What to do**:
   - Replace or heavily rewrite `packages/backend/AGENTS.md` to match gamestock’s backend rules:
@@ -363,7 +363,7 @@ src/
   - Document explicitly calls out the new canonical structure and patterns.
 
 
-- [ ] 13. Cleanup: remove old structure, validate end-to-end
+- [x] 13. Cleanup: remove old structure, validate end-to-end
 
   **What to do**:
   - Remove obsolete directories/files from the old layout.
