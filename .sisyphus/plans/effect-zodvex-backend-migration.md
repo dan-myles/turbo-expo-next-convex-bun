@@ -243,7 +243,7 @@ src/
   - Convex generates `_generated` types without schema errors when running dev.
 
 
-- [ ] 8. Migrate task module to validators → Effect → handler pattern
+- [x] 8. Migrate task module to validators → Effect → handler pattern
 
   **What to do**:
   - Create `src/modules/task/` endpoints using gamestock naming:

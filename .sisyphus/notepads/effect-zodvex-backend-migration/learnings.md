@@ -450,3 +450,86 @@ Both `src/tables/tasks.ts` and `src/schema.ts` are correctly implemented using t
 - Schema imports use relative paths from tables directory
 - Convex auto-generates types in `src/_generated/` on dev run
 - No additional configuration needed beyond table definition and schema import
+
+## Task Module Migration to Effect Pattern (2026-02-01)
+
+### Migration Summary
+
+Successfully migrated `modules/task/` from direct Convex functions to validators → Effect → handler pattern.
+
+**Files Created (8 new):**
+- `modules/task/list.validators.ts` - Args/result schemas for list query
+- `modules/task/list.ts` - Effect module using Query service
+- `modules/task/create.validators.ts` - Args/result schemas for create mutation
+- `modules/task/create.ts` - Effect module using Mutation service
+- `modules/task/toggle.validators.ts` - Args/result schemas for toggle mutation
+- `modules/task/toggle.ts` - Effect module using Mutation service
+- `modules/task/remove.validators.ts` - Args/result schemas for remove mutation
+- `modules/task/remove.ts` - Effect module using Mutation service
+- `functions/task.ts` - Handler wiring connecting validators → Effect → middleware
+
+**Files Removed (2 old):**
+- `modules/task/queries.ts`
+- `modules/task/mutations.ts`
+
+### Key Patterns Applied
+
+**Validator Pattern:**
+```typescript
+import { z } from "zod"
+import { zid } from "zodvex"
+import { Tasks } from "#backend/tables/tasks"
+
+export const listArgsSchema = z.object({})
+export type ListArgs = z.infer<typeof listArgsSchema>
+
+export const listResultSchema = z.array(Tasks.zDoc)
+export type ListResult = z.infer<typeof listResultSchema>
+```
+
+**Effect Module Pattern:**
+```typescript
+import { Effect } from "effect"
+import type { ListArgs, ListResult } from "./list.validators"
+import { DatabaseError } from "#backend/errors"
+import { Query } from "#backend/services"
+
+export const list = Effect.fn("task.list")(function* (_args: ListArgs) {
+  const { db } = yield* Query
+  
+  const tasks = yield* Effect.tryPromise({
+    try: () => db.query("tasks").order("desc").collect(),
+    catch: (e) => new DatabaseError({ operation: "query:tasks", cause: e }),
+  })
+  
+  return tasks satisfies ListResult
+})
+```
+
+**Handler Wiring Pattern:**
+```typescript
+import { Effect } from "effect"
+import { query, mutation } from "#backend/lib/middleware"
+import { list as listEffect } from "#backend/modules/task/list"
+import { listArgsSchema, listResultSchema } from "#backend/modules/task/list.validators"
+import { Query, Mutation } from "#backend/services"
+
+export const list = query({
+  args: listArgsSchema,
+  returns: listResultSchema,
+  handler: (ctx) =>
+    listEffect({}).pipe(Effect.provide(Query.live(ctx)), Effect.runPromise),
+})
+```
+
+### Verification Results
+- ✓ `bun run typecheck --filter @acme/backend` passes
+- ✓ Convex dev starts successfully (functions ready in 2.47s)
+- ✓ Functions appear at new API path: `api.functions.task.*`
+
+### Notes
+- API path changed from `api.modules.task.queries.list` to `api.functions.task.list`
+- Frontend consumers need to update imports to use new path
+- Unused args parameter prefixed with underscore (`_args`) to avoid lint warnings
+- `satisfies` keyword used for type assertion on return values
+- Throwing native Error for "Task not found" in toggle (matches original behavior)
