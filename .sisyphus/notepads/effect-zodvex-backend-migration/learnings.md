@@ -293,3 +293,54 @@ Note: `catalog:effect` needs to be resolved to actual version from workspace cat
 ### Next Steps
 - Migrate files into appropriate new directories based on functionality
 - Update imports as files are moved
+
+## Effect Service Layer Implementation (2026-02-02)
+
+### Services Created
+
+**`packages/backend/src/services/ctx.ts`**:
+- Implemented `Query`, `Mutation`, `Action` services using Effect's `Context.Tag`
+- Each service wraps the corresponding Convex context type from middleware
+- Each service has a static `live` method that creates a `Layer.succeed` for dependency injection
+- Pattern matches gamestock v2 exactly
+
+**`packages/backend/src/services/index.ts`**:
+- Barrel export for all three services
+- Enables clean imports: `import { Query, Mutation, Action } from "#backend/services"`
+
+### Middleware Updates
+
+**`packages/backend/src/lib/middleware.ts`**:
+- Added `ExtractCtx` import from zodvex
+- Exported three context types:
+  - `PublicQueryCtx = ExtractCtx<typeof query>`
+  - `PublicMutationCtx = ExtractCtx<typeof mutation>`
+  - `PublicActionCtx = ExtractCtx<typeof action>`
+- These types are extracted from the zodvex builders and represent the full Convex context
+
+### Key Pattern Details
+
+**Context.Tag Pattern**:
+```typescript
+export class Query extends Context.Tag("Query")<Query, PublicQueryCtx>() {
+  static live = (ctx: PublicQueryCtx) => Layer.succeed(Query, ctx)
+}
+```
+
+- First type parameter: the class itself (Query)
+- Second type parameter: the value type (PublicQueryCtx)
+- `static live` method creates a Layer for dependency injection
+- Can be used in Effect with `yield* Query` to access the context
+
+### Verification
+
+- ✅ `bun run typecheck --filter @acme/backend` passes
+- ✅ All three services properly typed
+- ✅ Barrel export works correctly
+- ✅ No TypeScript errors in new files
+
+### Next Steps
+
+- Ready to implement Effect-based modules using these services
+- Can now use `yield* Query`, `yield* Mutation`, `yield* Action` in Effect functions
+- Services can be provided via `Effect.provide(Query.live(ctx))`

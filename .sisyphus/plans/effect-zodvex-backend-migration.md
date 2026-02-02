@@ -168,7 +168,7 @@ src/
   - All backend files under `packages/backend/src/` follow `snake_case` (excluding generated files).
 
 
-- [ ] 4. Implement Effect service layer (Context.Tag + Layer) aligned to gamestock
+- [x] 4. Implement Effect service layer (Context.Tag + Layer) aligned to gamestock
 
   **What to do**:
   - Add `src/services/ctx.ts` implementing the core Convex context services:

@@ -64,7 +64,7 @@
  *   },
  * })
  */
-import { zActionBuilder, zMutationBuilder, zQueryBuilder } from "zodvex"
+import { type ExtractCtx, zActionBuilder, zMutationBuilder, zQueryBuilder } from "zodvex"
 
 import {
   action as convexAction,
@@ -89,3 +89,10 @@ export const mutation = zMutationBuilder(convexMutation)
  * Use for unauthenticated or public actions.
  */
 export const action = zActionBuilder(convexAction)
+
+/**
+ * Extract context types from builders for use in Effect services.
+ */
+export type PublicQueryCtx = ExtractCtx<typeof query>
+export type PublicMutationCtx = ExtractCtx<typeof mutation>
+export type PublicActionCtx = ExtractCtx<typeof action>
