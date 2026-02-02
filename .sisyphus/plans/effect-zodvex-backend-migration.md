@@ -187,7 +187,7 @@ src/
   - `bun run typecheck` passes for newly added services in isolation.
 
 
-- [ ] 5. Implement typed error taxonomy using `Data.TaggedError`
+- [x] 5. Implement typed error taxonomy using `Data.TaggedError`
 
   **What to do**:
   - Add `src/errors/common.ts` (e.g. DatabaseError, StorageError) and `src/errors/index.ts` barrel.
@@ -206,7 +206,7 @@ src/
   - New errors compile and can be imported by modules.
 
 
-- [ ] 6. Rebuild zodvex middleware layer to match gamestock patterns
+- [x] 6. Rebuild zodvex middleware layer to match gamestock patterns
 
   **What to do**:
   - Update/create `src/lib/middleware.ts`:

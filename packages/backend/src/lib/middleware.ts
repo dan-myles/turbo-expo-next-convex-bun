@@ -68,6 +68,9 @@ import { type ExtractCtx, zActionBuilder, zMutationBuilder, zQueryBuilder } from
 
 import {
   action as convexAction,
+  internalAction as convexInternalAction,
+  internalMutation as convexInternalMutation,
+  internalQuery as convexInternalQuery,
   mutation as convexMutation,
   query as convexQuery,
 } from "@acme/backend/_generated/server"
@@ -91,8 +94,30 @@ export const mutation = zMutationBuilder(convexMutation)
 export const action = zActionBuilder(convexAction)
 
 /**
+ * Internal query builder with Zod validation.
+ * Use for internal-only queries (not exposed to public API).
+ */
+export const internalQuery = zQueryBuilder(convexInternalQuery)
+
+/**
+ * Internal mutation builder with Zod validation.
+ * Use for internal-only mutations (not exposed to public API).
+ */
+export const internalMutation = zMutationBuilder(convexInternalMutation)
+
+/**
+ * Internal action builder with Zod validation.
+ * Use for internal-only actions (not exposed to public API).
+ */
+export const internalAction = zActionBuilder(convexInternalAction)
+
+/**
  * Extract context types from builders for use in Effect services.
  */
 export type PublicQueryCtx = ExtractCtx<typeof query>
 export type PublicMutationCtx = ExtractCtx<typeof mutation>
 export type PublicActionCtx = ExtractCtx<typeof action>
+
+export type InternalQueryCtx = ExtractCtx<typeof internalQuery>
+export type InternalMutationCtx = ExtractCtx<typeof internalMutation>
+export type InternalActionCtx = ExtractCtx<typeof internalAction>

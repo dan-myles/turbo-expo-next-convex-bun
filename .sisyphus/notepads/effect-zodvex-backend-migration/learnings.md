@@ -344,3 +344,81 @@ export class Query extends Context.Tag("Query")<Query, PublicQueryCtx>() {
 - Ready to implement Effect-based modules using these services
 - Can now use `yield* Query`, `yield* Mutation`, `yield* Action` in Effect functions
 - Services can be provided via `Effect.provide(Query.live(ctx))`
+
+## Error Taxonomy Implementation (2026-02-02)
+
+### Files Created
+
+**`packages/backend/src/errors/common.ts`**:
+- Implemented `DatabaseError` extending `Data.TaggedError`
+  - Fields: `operation: string`, `cause?: unknown`
+  - Used for database operation failures
+- Implemented `StorageError` extending `Data.TaggedError`
+  - Fields: `operation: string`, `cause?: unknown`
+  - Used for storage operation failures
+- Both errors follow the gamestock v2 pattern exactly
+
+**`packages/backend/src/errors/index.ts`**:
+- Barrel export: `export * from "./common"`
+- Enables clean imports: `import { DatabaseError, StorageError } from "#backend/errors"`
+
+### Usage Pattern
+
+Errors are used in Effect modules with `Effect.tryPromise`:
+
+```typescript
+const data = yield* Effect.tryPromise({
+  try: () => db.query("tasks").collect(),
+  catch: (e) => new DatabaseError({ operation: "query:tasks", cause: e }),
+})
+```
+
+### Verification
+
+- ✅ `bun run typecheck` passes (7 successful, 7 total)
+- ✅ Errors compile without TypeScript errors
+- ✅ Errors can be imported from `#backend/errors`
+- ✅ Both DatabaseError and StorageError properly typed with operation and optional cause
+
+### Next Steps
+
+- Ready to use these errors in Effect-based modules
+- Can migrate existing error handling to use these typed errors
+- User-facing errors (with `userMessage` field) can be added to `errors/user.ts` when needed
+
+## Middleware Internal Builders Added (2026-02-02)
+
+### Changes Made
+
+**`packages/backend/src/lib/middleware.ts`**:
+- Added imports for `internalQuery`, `internalMutation`, `internalAction` from `_generated/server`
+- Created three new builders using zodvex:
+  - `internalQuery = zQueryBuilder(convexInternalQuery)`
+  - `internalMutation = zMutationBuilder(convexInternalMutation)`
+  - `internalAction = zActionBuilder(convexInternalAction)`
+- Exported three new context types:
+  - `InternalQueryCtx = ExtractCtx<typeof internalQuery>`
+  - `InternalMutationCtx = ExtractCtx<typeof internalMutation>`
+  - `InternalActionCtx = ExtractCtx<typeof internalAction>`
+
+### Pattern Details
+
+The internal builders follow the exact same pattern as public builders:
+- Use zodvex builders (`zQueryBuilder`, `zMutationBuilder`, `zActionBuilder`)
+- Wrap Convex's internal function types
+- Extract context types using `ExtractCtx` for use in Effect services
+- Maintain consistent naming: `Internal{Type}Ctx`
+
+### Verification
+
+- ✅ `bun run typecheck --filter @acme/backend` passes
+- ✅ All 6 builders properly exported (3 public + 3 internal)
+- ✅ All 6 context types properly exported
+- ✅ No TypeScript errors
+- ✅ Ready for Effect service layer integration
+
+### Next Steps
+
+- Can now create `InternalQuery`, `InternalMutation`, `InternalAction` services in `services/ctx.ts`
+- Internal functions can be defined using these builders in `functions/` directory
+- Internal modules can use the context types for Effect-based implementation
