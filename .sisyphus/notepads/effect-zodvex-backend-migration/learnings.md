@@ -422,3 +422,31 @@ The internal builders follow the exact same pattern as public builders:
 - Can now create `InternalQuery`, `InternalMutation`, `InternalAction` services in `services/ctx.ts`
 - Internal functions can be defined using these builders in `functions/` directory
 - Internal modules can use the context types for Effect-based implementation
+
+## Tasks Table Migration - VERIFIED ✓
+
+### Status: COMPLETE
+
+Both `src/tables/tasks.ts` and `src/schema.ts` are correctly implemented using the zodvex pattern:
+
+**tasks.ts Pattern:**
+- Uses `zodTable()` from zodvex to define table with Zod schema
+- Exports `Tasks` constant with table definition
+- Fields: text (string), completed (boolean), createdAt (number)
+
+**schema.ts Pattern:**
+- Imports table from `./tables/tasks`
+- Uses `Tasks.table` in defineSchema
+- Clean, minimal schema definition
+
+### Verification Results:
+✓ Convex dev: Schema generation successful (2.46s)
+✓ Typecheck: All packages pass (7 successful, 7 cached)
+✓ Generated types: dataModel.d.ts created correctly
+✓ No schema errors or warnings
+
+### Key Learnings:
+- zodvex `zodTable()` pattern is the standard for this project
+- Schema imports use relative paths from tables directory
+- Convex auto-generates types in `src/_generated/` on dev run
+- No additional configuration needed beyond table definition and schema import

@@ -226,7 +226,7 @@ src/
   - At least one trivial `query` can be defined using the middleware without TS errors.
 
 
-- [ ] 7. Migrate tasks table + schema wiring (keep zodvex)
+- [x] 7. Migrate tasks table + schema wiring (keep zodvex)
 
   **What to do**:
   - Ensure `src/tables/tasks.ts` follows the zodvex `zodTable` pattern.
