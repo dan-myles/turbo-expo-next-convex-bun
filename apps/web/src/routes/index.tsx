@@ -1,7 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router"
+import { useQuery } from "convex/react"
+
+import { api } from "@acme/backend/_generated/api"
 
 export const Route = createFileRoute("/")({ component: App })
 
 function App() {
-  return <div className="bg-red-200">hello!</div>
+  const data = useQuery(api.modules.task.queries.list)
+  if (!data) return <div>Loading...</div>
+
+  return (
+    <div className="bg-red-200">
+      {data.map((d) => (
+        <div>{d._id}</div>
+      ))}
+    </div>
+  )
 }

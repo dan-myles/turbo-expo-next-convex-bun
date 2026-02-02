@@ -108,9 +108,9 @@ Tooling packages use modern subpackage exports for granular imports:
 Import exactly what you need:
 
 ```js
-import baseConfig from "@acme/eslint-config/base"
-import reactConfig from "@acme/eslint-config/react"
-import tanstackConfig from "@acme/eslint-config/tanstack"
+import baseConfig from "@acme/eslint-config/base";
+import reactConfig from "@acme/eslint-config/react";
+import tanstackConfig from "@acme/eslint-config/tanstack";
 ```
 
 ### Composable ESLint Configuration
@@ -119,11 +119,11 @@ Each app composes its own ESLint config from modular pieces:
 
 ```js
 // apps/web/eslint.config.mjs
-import baseConfig from "@acme/eslint-config/base"
-import reactConfig from "@acme/eslint-config/react"
-import tanstackConfig from "@acme/eslint-config/tanstack"
+import baseConfig from "@acme/eslint-config/base";
+import reactConfig from "@acme/eslint-config/react";
+import tanstackConfig from "@acme/eslint-config/tanstack";
 
-export default [...baseConfig, ...reactConfig, ...tanstackConfig]
+export default [...baseConfig, ...reactConfig, ...tanstackConfig];
 ```
 
 ### Unified Tailwind Configuration
@@ -132,7 +132,7 @@ Single Tailwind v4 configuration shared across web and native:
 
 ```js
 // Both apps import the same config
-import "@acme/tailwind/globals.css"
+import "@acme/tailwind/globals.css";
 ```
 
 Native apps use `uniwind` for Tailwind class support in React Native.
@@ -225,3 +225,7 @@ TanStack Start apps can be deployed to various platforms:
 - Set up Convex production deployment keys in GitHub Secrets
 - Configure automatic deployments on push to main branch
 - Environment variables managed through Convex dashboard
+
+## Todo List 📝
+
+- [ ] Nodejs subpath imports with explicit .ts extensions!

@@ -146,7 +146,7 @@ src/
   - `bun run typecheck` succeeds (or only fails due to in-progress migration changes in later tasks).
 
 
-- [ ] 3. Create target directories and migrate file naming to `snake_case`
+- [x] 3. Create target directories and migrate file naming to `snake_case`
 
   **What to do**:
   - Create `src/services`, `src/errors`, `src/lib`, `src/modules`, `src/functions`, `src/http`.
