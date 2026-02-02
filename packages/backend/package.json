@@ -18,6 +18,9 @@
     },
     "./_generated/dataModel": {
       "types": "./src/_generated/dataModel.d.ts"
+    },
+    "./validators": {
+      "types": "./src/lib/validators.ts"
     }
   },
   "scripts": {

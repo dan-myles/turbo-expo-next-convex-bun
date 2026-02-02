@@ -533,3 +533,129 @@ export const list = query({
 - Unused args parameter prefixed with underscore (`_args`) to avoid lint warnings
 - `satisfies` keyword used for type assertion on return values
 - Throwing native Error for "Task not found" in toggle (matches original behavior)
+
+## Validators Barrel Export Created (2026-02-02)
+
+### Files Created
+
+**`packages/backend/src/lib/validators.ts`**:
+- Barrel export for all task validators and types
+- Exports 4 validator schemas: `listArgsSchema`, `listResultSchema`, `createArgsSchema`, `createResultSchema`, `toggleArgsSchema`, `toggleResultSchema`, `removeArgsSchema`, `removeResultSchema`
+- Exports 4 validator types: `ListArgs`, `ListResult`, `CreateArgs`, `CreateResult`, `ToggleArgs`, `ToggleResult`, `RemoveArgs`, `RemoveResult`
+- Uses `#backend/*` import alias for internal imports
+- Follows gamestock pattern exactly
+
+### Package.json Update
+
+**`packages/backend/package.json`**:
+- Added `./validators` export pointing to `./src/lib/validators.ts`
+- Enables frontend imports: `import { type CreateArgs } from "@acme/backend/validators"`
+- Export format: `{ "types": "./src/lib/validators.ts" }`
+
+### Verification
+
+- ✅ `bun run typecheck --filter @acme/backend` passes
+- ✅ All 8 validator schemas properly exported
+- ✅ All 8 validator types properly exported
+- ✅ Frontend can now import validator types from backend package
+- ✅ No TypeScript errors in validators.ts
+
+### Pattern Applied
+
+Matches gamestock v2 validators barrel export pattern:
+- Re-exports from individual validator files
+- Uses named exports (not default)
+- Exports both schemas and inferred types
+- Enables compile-time type checking on frontend
+
+### Next Steps
+
+- Frontend can now import validator types for compile-time validation
+- Can add user-facing error types to validators barrel if needed
+- Ready for frontend integration with type-safe API calls
+
+## HTTP Endpoints with Hono + Convex httpAction (2026-02-01)
+
+### Files Created
+
+**`packages/backend/src/http/http_errors.ts`**:
+- Implemented 5 HTTP error classes extending `Data.TaggedError`:
+  - `BadRequest` (400)
+  - `Unauthorized` (401)
+  - `Forbidden` (403)
+  - `NotFound` (404)
+  - `InternalServerError` (500)
+- Each error has optional `message` field
+- Exported `errorToResponse` function that converts errors to Response objects with appropriate status codes
+- Pattern matches gamestock v2 exactly
+
+**`packages/backend/src/http/router.ts`**:
+- Created Hono app instance
+- Added GET `/health` route returning `{ status: "ok" }`
+- Added POST `/webhook/example` route that echoes received JSON body
+- Exported Hono app as default export
+- Minimal example-only implementation (no auth/security)
+
+**`packages/backend/src/http.ts`**:
+- Convex HTTP entrypoint using `httpRouter` from "convex/server"
+- Imports `httpAction` from "_generated/server"
+- Mounts Hono app using `httpAction` wrapper
+- Routes both GET and POST requests to catch-all path `/.*`
+- Passes Convex context to Hono via `{ convex: ctx }` option
+- Exported as default
+
+### Key Patterns
+
+**HTTP Error Pattern**:
+```typescript
+export class BadRequest extends Data.TaggedError("BadRequest")<{
+  message?: string
+}> {}
+
+export const errorToResponse = (error: unknown): Response => {
+  if (error instanceof BadRequest) {
+    return Response.json({ message: error.message || "Bad request" }, { status: 400 })
+  }
+  // ... other error types
+  return Response.json({ message: "Internal server error" }, { status: 500 })
+}
+```
+
+**Hono Router Pattern**:
+```typescript
+const app = new Hono()
+app.get("/health", (c) => c.json({ status: "ok" }))
+app.post("/webhook/example", async (c) => {
+  const body = await c.req.json()
+  return c.json({ received: true, data: body })
+})
+export default app
+```
+
+**Convex HTTP Entrypoint Pattern**:
+```typescript
+const http = httpRouter()
+http.route({
+  path: "/.*",
+  method: "GET",
+  handler: httpAction(async (ctx, req) => {
+    return app.fetch(req, { convex: ctx })
+  }),
+})
+export default http
+```
+
+### Verification Results
+
+- ✅ All three files created successfully
+- ✅ `bun run typecheck --filter @acme/backend` passes (3 successful, 3 total)
+- ✅ Convex dev server starts successfully (functions ready in 2.48s)
+- ✅ No TypeScript errors in new HTTP files
+- ✅ HTTP routes ready for testing
+
+### Next Steps
+
+- HTTP endpoints can be tested via Convex dev server
+- Can extend with authentication middleware using Convex context
+- Can add more routes to router.ts as needed
+- Error handling can be integrated with Effect-based modules

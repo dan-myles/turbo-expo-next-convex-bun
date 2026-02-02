@@ -279,7 +279,7 @@ src/
     - Verify expected changes in the tasks table.
 
 
-- [ ] 9. Add `lib/validators.ts` barrel exports for frontend consumption
+- [x] 9. Add `lib/validators.ts` barrel exports for frontend consumption
 
   **What to do**:
   - Create `src/lib/validators.ts` that re-exports task validators + types.
@@ -294,7 +294,7 @@ src/
   - Frontend can import validator types from backend package (compile-time check).
 
 
-- [ ] 10. Add HTTP example using Hono + Convex httpAction
+- [x] 10. Add HTTP example using Hono + Convex httpAction
 
   **What to do**:
   - Create `src/http/http_errors.ts` with typed HTTP errors + `error_to_response` converter (gamestock style).
