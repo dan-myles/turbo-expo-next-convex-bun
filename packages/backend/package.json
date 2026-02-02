@@ -35,6 +35,8 @@
   "dependencies": {
     "@t3-oss/env-core": "catalog:",
     "convex": "catalog:convex",
+    "effect": "^3.11.9",
+    "hono": "^4.7.4",
     "neverthrow": "catalog:",
     "zod": "catalog:",
     "zodvex": "catalog:convex"
@@ -44,6 +46,7 @@
     "@acme/prettier-config": "workspace:*",
     "@acme/tsconfig": "workspace:*",
     "@convex-dev/eslint-plugin": "catalog:eslint",
+    "@effect/vitest": "^0.16.0",
     "@eslint/compat": "catalog:eslint",
     "@eslint/eslintrc": "catalog:eslint",
     "@ianvs/prettier-plugin-sort-imports": "catalog:prettier",
@@ -57,6 +60,7 @@
     "prettier-plugin-merge": "catalog:prettier",
     "prettier-plugin-tailwindcss": "catalog:prettier",
     "typescript": "catalog:",
-    "typescript-eslint": "catalog:eslint"
+    "typescript-eslint": "catalog:eslint",
+    "vitest": "catalog:vite"
   }
 }
