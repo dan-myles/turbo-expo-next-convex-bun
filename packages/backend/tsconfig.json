@@ -9,10 +9,11 @@
     "module": "ESNext",
     "isolatedModules": true,
     "noEmit": true,
+    "skipLibCheck": true,
     "paths": {
       "#backend/*": ["./src/*"]
     }
   },
-  "include": ["./**/*"],
-  "exclude": ["node_modules/", "eslint.config.js"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/", "dist/", "build/"]
 }

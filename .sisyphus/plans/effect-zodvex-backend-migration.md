@@ -323,7 +323,7 @@ src/
     - POST to `/webhook/example` and receive a deterministic JSON response
 
 
-- [ ] 11. Update all callers of Convex functions to new paths
+- [x] 11. Update all callers of Convex functions to new paths
 
   **What to do**:
   - Find all usages of old generated API paths (e.g. `api.modules.task.*`).

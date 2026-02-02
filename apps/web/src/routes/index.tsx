@@ -6,7 +6,7 @@ import { api } from "@acme/backend/_generated/api"
 export const Route = createFileRoute("/")({ component: App })
 
 function App() {
-  const data = useQuery(api.modules.task.queries.list)
+  const data = useQuery(api.functions.task.list)
   if (!data) return <div>Loading...</div>
 
   return (
