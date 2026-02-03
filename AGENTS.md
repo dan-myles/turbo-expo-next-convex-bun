@@ -16,6 +16,11 @@ may include its own `AGENTS.md` file, which you must adhere to.
 > `packages/` however, it is a cloud app. In general all submodules
 > in `apps/` are deployed, and `packages/` not.
 
+## Backend Architecture Pointer
+
+- Canonical backend design: `packages/backend/ARCHITECTURE.md`
+- Backend-specific rules: `packages/backend/AGENTS.md`
+
 ## Code Standards
 
 - Use TypeScript with strict mode enabled
