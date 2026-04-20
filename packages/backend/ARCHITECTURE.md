@@ -86,7 +86,6 @@ export type ListResult = z.infer<typeof listResultSchema>
 import { Effect } from "effect"
 
 import type { ListArgs, ListResult } from "./list.validators"
-
 import { DatabaseError } from "#backend/errors"
 import { Query } from "#backend/services"
 
@@ -109,17 +108,17 @@ import { Effect } from "effect"
 
 import { query } from "#backend/lib/middleware"
 import { list as listEffect } from "#backend/modules/task/list"
-import { listArgsSchema, listResultSchema } from "#backend/modules/task/list.validators"
+import {
+  listArgsSchema,
+  listResultSchema,
+} from "#backend/modules/task/list.validators"
 import { Query } from "#backend/services"
 
 export const list = query({
   args: listArgsSchema,
   returns: listResultSchema,
   handler: (ctx) =>
-    listEffect({}).pipe(
-      Effect.provide(Query.live(ctx)),
-      Effect.runPromise,
-    ),
+    listEffect({}).pipe(Effect.provide(Query.live(ctx)), Effect.runPromise),
 })
 ```
 
@@ -186,12 +185,12 @@ import type { ListResult } from "@acme/backend/validators"
 
 File structure maps to API paths under `api.functions.*`:
 
-| File                  | Export | API Path                     |
-| --------------------- | ------ | ---------------------------- |
-| `functions/task.ts`   | `list` | `api.functions.task.list`    |
-| `functions/task.ts`   | `create` | `api.functions.task.create` |
-| `functions/task.ts`   | `toggle` | `api.functions.task.toggle` |
-| `functions/task.ts`   | `remove` | `api.functions.task.remove` |
+| File                | Export   | API Path                    |
+| ------------------- | -------- | --------------------------- |
+| `functions/task.ts` | `list`   | `api.functions.task.list`   |
+| `functions/task.ts` | `create` | `api.functions.task.create` |
+| `functions/task.ts` | `toggle` | `api.functions.task.toggle` |
+| `functions/task.ts` | `remove` | `api.functions.task.remove` |
 
 ## How To Add A New Endpoint
 

@@ -1,3 +1,15 @@
+import type { ExtractCtx } from "zodvex"
+import { zActionBuilder, zMutationBuilder, zQueryBuilder } from "zodvex"
+
+import {
+  action as convexAction,
+  internalAction as convexInternalAction,
+  internalMutation as convexInternalMutation,
+  internalQuery as convexInternalQuery,
+  mutation as convexMutation,
+  query as convexQuery,
+} from "@acme/backend/_generated/server"
+
 /**
  * Convex middleware with Zod validation using zodvex.
  *
@@ -64,16 +76,6 @@
  *   },
  * })
  */
-import { type ExtractCtx, zActionBuilder, zMutationBuilder, zQueryBuilder } from "zodvex"
-
-import {
-  action as convexAction,
-  internalAction as convexInternalAction,
-  internalMutation as convexInternalMutation,
-  internalQuery as convexInternalQuery,
-  mutation as convexMutation,
-  query as convexQuery,
-} from "@acme/backend/_generated/server"
 
 /**
  * Public query builder with Zod validation.
