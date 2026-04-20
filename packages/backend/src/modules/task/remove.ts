@@ -8,7 +8,7 @@ export const remove = Effect.fn("task.remove")(function* (args: RemoveArgs) {
   const { db } = yield* Mutation
 
   yield* Effect.tryPromise({
-    try: () => db.delete(args.id),
+    try: () => db.delete("tasks", args.id),
     catch: (e) => new DatabaseError({ operation: "delete:tasks", cause: e }),
   })
 

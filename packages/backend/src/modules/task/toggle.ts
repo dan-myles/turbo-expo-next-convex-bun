@@ -8,7 +8,7 @@ export const toggle = Effect.fn("task.toggle")(function* (args: ToggleArgs) {
   const { db } = yield* Mutation
 
   const task = yield* Effect.tryPromise({
-    try: () => db.get(args.id),
+    try: () => db.get("tasks", args.id),
     catch: (e) => new DatabaseError({ operation: "get:tasks", cause: e }),
   })
 
@@ -16,7 +16,7 @@ export const toggle = Effect.fn("task.toggle")(function* (args: ToggleArgs) {
 
   yield* Effect.tryPromise({
     try: () =>
-      db.patch(args.id, {
+      db.patch("tasks", args.id, {
         completed: !task.completed,
       }),
     catch: (e) => new DatabaseError({ operation: "patch:tasks", cause: e }),
